@@ -3,8 +3,10 @@ import type { Level, Enemy, Obstacle, Item, Highscore } from "../types/api";
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
 
-let isLoading = false;
-let apiError: string | null = null;
+export const apiState = {
+  loading: false,
+  error: null as string | null,
+};
 
 async function fetchJson<T>(endpoint: string): Promise<T> {
   try {
@@ -15,11 +17,11 @@ async function fetchJson<T>(endpoint: string): Promise<T> {
     }
 
     return response.json();
-  } catch (err: any) {
-    apiError = err.message || "Error API call";
+  } catch (err) {
+    apiState.error = err instanceof Error ? err.message : "Erreur inconnue";
     throw err;
   } finally {
-    isLoading = false;
+    apiState.loading = false;
   }
 }
 
@@ -48,8 +50,8 @@ export async function fetchHighscores(): Promise<Highscore[]> {
 }
 
 export async function postHighscore(highscore: Highscore): Promise<Highscore> {
-  isLoading = true;
-  apiError = null;
+  apiState.loading = true;
+  apiState.error = null;
   try {
     const response = await fetch(`${API_BASE_URL}/api/highscores`, {
       method: "POST",
@@ -63,10 +65,10 @@ export async function postHighscore(highscore: Highscore): Promise<Highscore> {
       throw new Error(`API Error: ${response.status} ${response.statusText}`);
     }
     return response.json();
-  } catch (err: any) {
-    apiError = err.message || "Error sending highscore";
+  } catch (err) {
+    apiState.error = err instanceof Error ? err.message : "Erreur inconnue";
     throw err;
   } finally {
-    isLoading = false;
+    apiState.loading = false;
   }
 }
