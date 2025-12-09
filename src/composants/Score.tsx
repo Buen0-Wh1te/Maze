@@ -1,9 +1,7 @@
-import { useNavigate } from 'react-router-dom';
-
-export function Score{
+export function Score(){
     return(
         <>
-        <h1>Score</h1>
+            <h1>Score</h1>
         </>
     );
 }

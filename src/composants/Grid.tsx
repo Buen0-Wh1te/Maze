@@ -1,9 +1,7 @@
-import { useNavigate } from 'react-router-dom';
-
-export function Grid{
+export function Grid(){
     return(
         <>
-        <h1>Grid</h1>
+            <h1>Grid</h1>
         </>
     );
 }
