@@ -2,14 +2,26 @@ import type { Level, Enemy, Obstacle, Item, Highscore } from '../types/api';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
-async function fetchJson<T>(endpoint: string): Promise<T> {
-  const response = await fetch(`${API_BASE_URL}${endpoint}`);
+let isLoading = false;
+let apiError: string | null = null;
 
-  if (!response.ok) {
-    throw new Error(`API Error: ${response.status} ${response.statusText}`);
-  }
+async function fetchJson<T>(endpoint: string): Promise<T> {
+  try {
+    const response = await fetch(`${API_BASE_URL}${endpoint}`);
+
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+    }
 
   return response.json();
+  }
+  catch (err: any) {
+    apiError = err.message || 'Error API call';
+    throw err;
+  } 
+  finally{
+    isLoading = false;
+  }
 }
 
 export async function fetchLevels(): Promise<Level[]> {
@@ -37,17 +49,27 @@ export async function fetchHighscores(): Promise<Highscore[]> {
 }
 
 export async function postHighscore(highscore: Highscore): Promise<Highscore> {
-  const response = await fetch(`${API_BASE_URL}/api/highscores`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(highscore),
-  });
+  isLoading = true;
+  apiError = null;
+  try{
+    const response = await fetch(`${API_BASE_URL}/api/highscores`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(highscore),
+    });
 
-  if (!response.ok) {
-    throw new Error(`API Error: ${response.status} ${response.statusText}`);
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+    }
+    return response.json();
   }
-
-  return response.json();
+  catch (err: any) {
+    apiError = err.message || 'Error sending highscore';
+    throw err;
+  }
+  finally {
+    isLoading = false;
+  }
 }
