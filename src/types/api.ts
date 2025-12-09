@@ -1,17 +1,24 @@
 export interface Level {
   id: number;
   name: string;
+  description: string;
+  rows: number;
+  cols: number;
   difficulty: string;
-  width: number;
-  height: number;
+  hasCombat: boolean;
+  hasKeys: boolean;
+  hasObstacles: boolean;
+  start: Position;
+  end: Position;
   grid: string[][];
-  startPosition: Position;
-  endPosition: Position;
+  enemies: Enemy[];
+  obstacles: Obstacle[];
+  items: Item[];
 }
 
 export interface Position {
-  x: number;
-  y: number;
+  row: number;
+  col: number;
 }
 
 export interface Enemy {
