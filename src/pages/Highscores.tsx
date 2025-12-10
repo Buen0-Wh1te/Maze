@@ -61,21 +61,21 @@ export function Highscores() {
                 className="grid grid-cols-[60px_minmax(150px,1fr)_100px_80px_80px_80px] gap-4 px-4 py-3 border-b border-slate-700/50 last:border-0"
               >
                 <div
-                  className="text-xl font-bold text-center"
+                  className="text-center font-bold"
                   style={{
-                    color: index === 0 ? "#FFD700" : index === 1 ? "#C0C0C0" : index === 2 ? "#CD7F32" : "#FFA500",
+                    color: index === 0 ? "#FFD700" : index === 1 ? "#C0C0C0" : index === 2 ? "#CD7F32" : "#FFFFFF",
                   }}
                 >
                   #{index + 1}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-lg font-bold text-pink-300">{score.pseudo}</p>
+                  <p className="font-bold text-pink-300">{score.pseudo}</p>
                   <p className="text-xs text-gray-500">
                     {new Date(score.date).toLocaleDateString()}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-xl font-bold text-yellow-400">{score.totalScore}</p>
+                  <p className="font-bold text-yellow-400">{score.totalScore}</p>
                 </div>
                 <div className="text-right">
                   <p className="text-gray-200">{score.tilesRevealed}</p>
