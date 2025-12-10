@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Button } from "../components/Button";
 import { Tile } from "../components/Tile";
@@ -9,6 +9,7 @@ import type { TileState, TileType } from "../types/game";
 
 export function Game() {
   const navigate = useNavigate();
+  const { levelId } = useParams<{ levelId: string }>();
   const { pseudo } = useGame();
   const [level, setLevel] = useState<Level | null>(null);
   const [tiles, setTiles] = useState<TileState[][]>([]);
@@ -19,8 +20,10 @@ export function Game() {
   } | null>(null);
 
   useEffect(() => {
-    loadLevel(1);
-  }, []);
+    if (levelId) {
+      loadLevel(Number(levelId));
+    }
+  }, [levelId]);
 
   const loadLevel = async (levelId: number) => {
     try {
