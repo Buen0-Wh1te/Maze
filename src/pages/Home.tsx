@@ -1,10 +1,10 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/Button';
+import { useGame } from '../context/GameContext';
 
 export function Home() {
   const navigate = useNavigate();
-  const [pseudo, setPseudo] = useState('');
+  const { pseudo, setPseudo } = useGame();
 
   const handleStartGame = () => {
     if (pseudo.trim()) {
