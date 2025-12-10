@@ -40,11 +40,13 @@ export function Score() {
   useEffect(() => {
     stopBackgroundMusic();
     playGameoverSound();
+  }, [backgroundMusicRef, isMuted]);
 
+  useEffect(() => {
     if (score && pseudo) {
       saveScore(score, 1);
     }
-  }, [backgroundMusicRef, isMuted, score, pseudo]);
+  }, []);
 
   const handlePlayAgain = () => {
     resumeBackgroundMusic();
