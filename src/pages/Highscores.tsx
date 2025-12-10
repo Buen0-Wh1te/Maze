@@ -40,53 +40,51 @@ export function Highscores() {
         </h1>
 
         {scores.length === 0 ? (
-          <div className="bg-slate-800/90 backdrop-blur-sm border-2 border-slate-600 rounded-lg p-8">
-            <p className="text-center text-gray-300 text-xl">
+          <div className="bg-slate-800/90 backdrop-blur-sm border border-slate-600 rounded p-6">
+            <p className="text-center text-gray-300">
               No scores yet. Play a game to set a record!
             </p>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="bg-slate-800/90 backdrop-blur-sm border border-pink-900/50 rounded overflow-hidden">
+            <div className="grid grid-cols-[auto_1fr_auto_auto_auto_auto] gap-4 p-3 bg-slate-900/50 text-xs font-semibold text-gray-400 border-b border-slate-700">
+              <div className="text-center">Rank</div>
+              <div>Player</div>
+              <div className="text-right">Score</div>
+              <div className="text-right">Tiles</div>
+              <div className="text-right">Moves</div>
+              <div className="text-right">Time</div>
+            </div>
             {scores.map((score, index) => (
               <div
                 key={index}
-                className="bg-slate-800/90 backdrop-blur-sm border-2 border-pink-900/50 rounded-lg p-6 flex items-center justify-between hover:border-pink-800 transition-colors"
+                className="grid grid-cols-[auto_1fr_auto_auto_auto_auto] gap-4 p-3 border-b border-slate-700/50 last:border-0"
               >
-                <div className="flex items-center gap-6">
-                  <div
-                    className="text-4xl font-bold w-12 text-center"
-                    style={{
-                      color: index === 0 ? "#FFD700" : index === 1 ? "#C0C0C0" : index === 2 ? "#CD7F32" : "#FFA500",
-                    }}
-                  >
-                    #{index + 1}
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold text-pink-200">{score.pseudo}</p>
-                    <p className="text-sm text-gray-400">
-                      {new Date(score.date).toLocaleDateString()} at{" "}
-                      {new Date(score.date).toLocaleTimeString()}
-                    </p>
-                  </div>
+                <div
+                  className="text-xl font-bold w-12 text-center"
+                  style={{
+                    color: index === 0 ? "#FFD700" : index === 1 ? "#C0C0C0" : index === 2 ? "#CD7F32" : "#FFA500",
+                  }}
+                >
+                  #{index + 1}
                 </div>
-
-                <div className="flex gap-8 text-right">
-                  <div>
-                    <p className="text-3xl font-bold text-yellow-400">{score.totalScore}</p>
-                    <p className="text-xs text-gray-400">Score</p>
-                  </div>
-                  <div>
-                    <p className="text-lg text-gray-200">{score.tilesRevealed}</p>
-                    <p className="text-xs text-gray-400">Tiles</p>
-                  </div>
-                  <div>
-                    <p className="text-lg text-gray-200">{score.moves}</p>
-                    <p className="text-xs text-gray-400">Moves</p>
-                  </div>
-                  <div>
-                    <p className="text-lg text-gray-200">{score.timeElapsed}s</p>
-                    <p className="text-xs text-gray-400">Time</p>
-                  </div>
+                <div className="min-w-0">
+                  <p className="text-lg font-bold text-pink-200 truncate">{score.pseudo}</p>
+                  <p className="text-xs text-gray-500">
+                    {new Date(score.date).toLocaleDateString()}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xl font-bold text-yellow-400">{score.totalScore}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-gray-200">{score.tilesRevealed}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-gray-200">{score.moves}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-gray-200">{score.timeElapsed}s</p>
                 </div>
               </div>
             ))}
