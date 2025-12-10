@@ -6,7 +6,7 @@ export function useInputSound() {
 
   if (!audioRef.current) {
     audioRef.current = new Audio(buttonPressSound);
-    audioRef.current.volume = 0.3;
+    audioRef.current.volume = 0.6;
   }
 
   const playSound = useCallback(() => {

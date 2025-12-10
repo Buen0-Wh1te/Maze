@@ -6,7 +6,7 @@ interface BackgroundMusicProps {
   volume?: number;
 }
 
-export function BackgroundMusic({ src, volume = 0.3 }: BackgroundMusicProps) {
+export function BackgroundMusic({ src, volume = 0.15 }: BackgroundMusicProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isMuted, setIsMuted] = useState(true);
 
