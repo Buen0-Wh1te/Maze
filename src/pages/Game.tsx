@@ -33,7 +33,7 @@ export function Game() {
       case "end":
         return "bg-red-500";
       default:
-        return "bg-gray-600"; // empty
+        return "bg-gray-600";
     }
   };
 
