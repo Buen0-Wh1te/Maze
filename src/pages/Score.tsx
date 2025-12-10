@@ -1,14 +1,17 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useEffect } from "react";
 import { Button } from "../components/Button";
 import { useAudio } from "../hooks/useAudio";
+import { saveScore } from "../utils/scores";
 import backgroundImage from "../assets/backgrounds/endgame.jpg";
 import gameoverSound from "../assets/sounds/gameover.mp3";
 
 export function Score() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { backgroundMusicRef, isMuted } = useAudio();
+  const { score, pseudo } = location.state || {};
 
   const stopBackgroundMusic = () => {
     if (backgroundMusicRef?.current) {
@@ -37,7 +40,11 @@ export function Score() {
   useEffect(() => {
     stopBackgroundMusic();
     playGameoverSound();
-  }, [backgroundMusicRef, isMuted]);
+
+    if (score && pseudo) {
+      saveScore(score, 1);
+    }
+  }, [backgroundMusicRef, isMuted, score, pseudo]);
 
   const handlePlayAgain = () => {
     resumeBackgroundMusic();
@@ -81,13 +88,32 @@ export function Score() {
           You fell to your death
         </h1>
       </motion.div>
+      {score && (
+        <motion.div
+          className="text-center mt-8 space-y-2"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.5, duration: 0.5 }}
+        >
+          <p className="text-2xl font-bold text-red-400">Final Score: {score.totalScore}</p>
+          <div className="text-gray-300 space-y-1">
+            <p>Tiles Revealed: {score.tilesRevealed}</p>
+            <p>Moves: {score.moves}</p>
+            <p>Time: {score.timeElapsed}s</p>
+          </div>
+        </motion.div>
+      )}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 2, duration: 0.5 }}
+        className="flex gap-4"
       >
-        <Button onClick={handlePlayAgain} className="mt-8">
+        <Button onClick={handlePlayAgain}>
           Try Again
+        </Button>
+        <Button onClick={() => navigate("/highscores")}>
+          View Highscores
         </Button>
       </motion.div>
     </div>
