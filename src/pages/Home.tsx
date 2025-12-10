@@ -16,6 +16,11 @@ export function Home() {
     <div className="bg-slate-700 text-white flex flex-col items-center justify-center min-h-screen gap-4">
       <h1 className="text-4xl font-bold">Maze Game</h1>
       <p className="text-gray-400">Welcome to the Maze Game!</p>
+      <p>
+        The goal of the game is to find the exit by lifting the tiles to reveal
+        the path, you can only reveal tiles adjacent to the one already
+        revealed.
+      </p>
       <input
         type="text"
         placeholder="Enter your pseudo"
