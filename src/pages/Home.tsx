@@ -28,11 +28,14 @@ export function Home() {
         className="text-9xl font-bold text-center"
         style={{
           fontFamily: "'UnifrakturCook', cursive",
-          background: "radial-gradient(circle, #e8e8e8 0%, #d0d0d0 30%, #b0b0b0 60%, #909090 100%)",
+          //background: "radial-gradient(circle, #e8e8e8 0%, #d0d0d0 30%, #b0b0b0 60%, #909090 100%)",
+          background: "#909090",
           WebkitBackgroundClip: "text",
           WebkitTextFillColor: "transparent",
           backgroundClip: "text",
-          textShadow: "2px 2px 0px rgba(0,0,0,0.3), 4px 4px 0px rgba(0,0,0,0.2), 6px 6px 0px rgba(0,0,0,0.1)"
+          //textShadow: "2px 2px 3px rgba(255,255,255,0.5)"
+          //boxShadow: "inset 0px -5px 10px 0px rgba(0, 0, 0, 0.5)"
+          textShadow: "2px 2px 0px rgba(255,255,255,0.3), 4px 4px 0px rgba(255,255,255,0.2), 6px 6px 0px rgba(255,255,255,0.1)"
         }}
         animate={{
           x: [0, 3.5, 7, 7, 7, 3.5, 0, -3.5, -7, -7, -7, -3.5, 0],
