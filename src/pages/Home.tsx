@@ -2,12 +2,14 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "../components/Button";
 import { useGame } from "../hooks/useGame";
+import { useInputSound } from "../hooks/useInputSound";
 import backgroundImage from "../assets/backgrounds/dungeon-corridor.webp";
 import titleLogo from "../assets/logos/mainTitle.png";
 
 export function Home() {
   const navigate = useNavigate();
   const { pseudo, setPseudo } = useGame();
+  const { onKeyDown } = useInputSound();
 
   const handleStartGame = () => {
     if (pseudo.trim()) {
@@ -50,6 +52,7 @@ export function Home() {
         placeholder="Enter your pseudo"
         value={pseudo}
         onChange={(e) => setPseudo(e.target.value)}
+        onKeyDown={onKeyDown}
         className="px-4 py-2 rounded bg-slate-600 text-white placeholder-gray-400 border border-slate-500 focus:border-pink-800 focus:outline-none mt-8"
       />
       <Button onClick={handleStartGame} disabled={!pseudo.trim()} className="mt-4">
