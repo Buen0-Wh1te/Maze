@@ -1,18 +1,51 @@
-import { useNavigate } from 'react-router-dom';
-import { Button } from '../components/Button';
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { Button } from "../components/Button";
+import backgroundImage from "../assets/backgrounds/endgame.jpg";
 
 export function Score() {
   const navigate = useNavigate();
 
   const handlePlayAgain = () => {
-    navigate('/');
+    navigate("/");
   };
 
   return (
-    <div className="bg-slate-700 text-white flex flex-col items-center justify-center min-h-screen gap-4">
-      <h1 className="text-4xl font-bold">Game Over</h1>
-      <p className="text-gray-400">Final Score: 0</p>
-      <Button onClick={handlePlayAgain}>Play Again</Button>
+    <div
+      className="text-white flex flex-col items-center justify-center min-h-screen"
+      style={{
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
+    >
+      <motion.h1
+        className="text-9xl font-bold text-center px-4"
+        style={{
+          fontFamily: "'UnifrakturCook', cursive",
+          background: "#8B0000",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+          backgroundClip: "text",
+          textShadow:
+            "2px 2px 0px rgba(139,0,0,0.3), 4px 4px 0px rgba(139,0,0,0.2), 6px 6px 0px rgba(139,0,0,0.1)",
+        }}
+        initial={{ opacity: 0, y: -50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1.5, ease: "easeOut" }}
+      >
+        You fell to your death
+      </motion.h1>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 2, duration: 0.5 }}
+      >
+        <Button onClick={handlePlayAgain} className="mt-8">
+          Try Again
+        </Button>
+      </motion.div>
     </div>
   );
 }
