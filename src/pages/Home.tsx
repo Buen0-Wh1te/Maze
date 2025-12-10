@@ -17,6 +17,7 @@ export function Home() {
         the path, you can only reveal tiles adjacent to the one already
         revealed.
       </p>
+      <p>Good Luck!</p>
       <Button onClick={handleStartGame}>Start Game</Button>
     </div>
   );
