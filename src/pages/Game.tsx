@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "../components/Button";
 import { useEffect, useState } from "react";
 import { fetchLevel } from "../services/api";
@@ -8,16 +8,21 @@ import { useGame } from "../hooks/useGame";
 export function Game() {
   const navigate = useNavigate();
   const { pseudo } = useGame();
+  const { id } = useParams<{ id: string }>();
   const [level, setLevel] = useState<Level | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!navigate) return;
+    if (!id) return;
 
-    fetchLevel(Number(navigate))
+    fetchLevel(Number(id))
       .then((data) => setLevel(data))
+      .catch((err) => {
+        console.error(err);
+        setLevel(null);
+      })
       .finally(() => setLoading(false));
-  }, [navigate]);
+  }, [id]);
 
   const handleEndGame = () => {
     navigate("/score");
