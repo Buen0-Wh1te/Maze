@@ -34,7 +34,7 @@ export function Tile({ type, revealed, isPlayer = false, onClick }: TileProps) {
   return (
     <div
       onClick={onClick}
-      className={`w-12 h-12 border-2 flex items-center justify-center font-bold text-white cursor-pointer transition-colors hover:opacity-80 
+      className={`w-full h-full border-2 flex items-center justify-center font-bold text-white cursor-pointer transition-colors hover:opacity-80 text-xl
         ${style}
         ${revealed ? "opacity-100" : "opacity-20"}
         ${isPlayer ? "bg-blue-500" : ""}

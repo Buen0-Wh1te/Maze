@@ -172,24 +172,27 @@ export function Game() {
         <span className="text-gray-300">Moves: <span className="text-white font-bold">{moves}</span></span>
         <span className="text-gray-300">Tiles Revealed: <span className="text-white font-bold">{tilesRevealed}</span></span>
       </div>
-      <div className="flex flex-col gap-0 shadow-2xl">
-        {tiles.map((row, rowIndex) => (
-          <div key={rowIndex} className="flex gap-0">
-            {row.map((tile, colIndex) => (
-              <Tile
-                key={`${rowIndex}-${colIndex}`}
-                type={tile.type}
-                revealed={tile.revealed}
-                isPlayer={
-                  playerPos?.row === rowIndex && playerPos?.col === colIndex
-                }
-                onClick={() => handleTileClick(rowIndex, colIndex)}
-              />
-            ))}
-          </div>
-        ))}
+      <div className="flex-1 flex items-center justify-center">
+        <div className="flex flex-col gap-0 shadow-2xl" style={{ maxHeight: "60vh" }}>
+          {tiles.map((row, rowIndex) => (
+            <div key={rowIndex} className="flex gap-0" style={{ flex: 1 }}>
+              {row.map((tile, colIndex) => (
+                <div key={`${rowIndex}-${colIndex}`} style={{ flex: 1, aspectRatio: "1/1" }}>
+                  <Tile
+                    type={tile.type}
+                    revealed={tile.revealed}
+                    isPlayer={
+                      playerPos?.row === rowIndex && playerPos?.col === colIndex
+                    }
+                    onClick={() => handleTileClick(rowIndex, colIndex)}
+                  />
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
       </div>
-      <Button onClick={handleEndGame} className="mt-4">
+      <Button onClick={handleEndGame}>
         End Game
       </Button>
     </div>
