@@ -21,7 +21,7 @@ export function Score() {
       }}
     >
       <motion.div
-        className="w-full flex items-center justify-center py-8"
+        className="w-[200vw] flex items-center justify-center py-8"
         style={{
           backgroundColor: "rgba(0, 0, 0, 0.85)",
           backdropFilter: "blur(20px)",
