@@ -70,9 +70,6 @@ export function Highscores() {
                 </div>
                 <div className="min-w-0">
                   <p className="font-bold text-pink-300">{score.pseudo}</p>
-                  <p className="text-xs text-gray-500">
-                    {new Date(score.date).toLocaleDateString()}
-                  </p>
                 </div>
                 <div className="text-right">
                   <p className="font-bold text-yellow-400">{score.totalScore}</p>

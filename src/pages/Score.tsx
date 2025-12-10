@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Button } from "../components/Button";
 import { useAudio } from "../hooks/useAudio";
 import { saveScore } from "../utils/scores";
@@ -12,6 +12,7 @@ export function Score() {
   const location = useLocation();
   const { backgroundMusicRef, isMuted } = useAudio();
   const { score, pseudo } = location.state || {};
+  const scoreSavedRef = useRef(false);
 
   const stopBackgroundMusic = () => {
     if (backgroundMusicRef?.current) {
@@ -43,10 +44,11 @@ export function Score() {
   }, [backgroundMusicRef, isMuted]);
 
   useEffect(() => {
-    if (score && pseudo) {
+    if (score && pseudo && !scoreSavedRef.current) {
       saveScore(score, 1);
+      scoreSavedRef.current = true;
     }
-  }, []);
+  }, [score, pseudo]);
 
   const handlePlayAgain = () => {
     resumeBackgroundMusic();
