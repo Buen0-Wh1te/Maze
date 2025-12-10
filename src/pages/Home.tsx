@@ -40,7 +40,7 @@ export function Home() {
           ease: "linear"
         }}
       />
-      <p className="mt-8 text-center max-w-2xl px-4 text-lg text-gray-300">
+      <p className="mt-2 text-center max-w-2xl px-4 text-lg text-gray-300">
         The goal of the game is to find the exit by lifting the tiles to reveal
         the path. You can only reveal tiles adjacent to the ones already
         revealed.
