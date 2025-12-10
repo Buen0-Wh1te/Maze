@@ -47,7 +47,7 @@ export function Highscores() {
           </div>
         ) : (
           <div className="bg-slate-800/90 backdrop-blur-sm border border-pink-900/50 rounded overflow-hidden">
-            <div className="grid grid-cols-[auto_1fr_auto_auto_auto_auto] gap-4 p-3 bg-slate-900/50 text-xs font-semibold text-gray-400 border-b border-slate-700">
+            <div className="grid grid-cols-[60px_minmax(150px,1fr)_100px_80px_80px_80px] gap-4 px-4 py-3 bg-slate-900/50 text-xs font-semibold text-gray-400 border-b border-slate-700">
               <div className="text-center">Rank</div>
               <div>Player</div>
               <div className="text-right">Score</div>
@@ -58,10 +58,10 @@ export function Highscores() {
             {scores.map((score, index) => (
               <div
                 key={index}
-                className="grid grid-cols-[auto_1fr_auto_auto_auto_auto] gap-4 p-3 border-b border-slate-700/50 last:border-0"
+                className="grid grid-cols-[60px_minmax(150px,1fr)_100px_80px_80px_80px] gap-4 px-4 py-3 border-b border-slate-700/50 last:border-0"
               >
                 <div
-                  className="text-xl font-bold w-12 text-center"
+                  className="text-xl font-bold text-center"
                   style={{
                     color: index === 0 ? "#FFD700" : index === 1 ? "#C0C0C0" : index === 2 ? "#CD7F32" : "#FFA500",
                   }}
@@ -69,7 +69,7 @@ export function Highscores() {
                   #{index + 1}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-lg font-bold text-pink-200 truncate">{score.pseudo}</p>
+                  <p className="text-lg font-bold text-pink-300">{score.pseudo}</p>
                   <p className="text-xs text-gray-500">
                     {new Date(score.date).toLocaleDateString()}
                   </p>
