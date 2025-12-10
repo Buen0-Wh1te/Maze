@@ -8,8 +8,8 @@ interface BackgroundMusicProps {
 }
 
 export function BackgroundMusic({ src, volume = 0.15 }: BackgroundMusicProps) {
-  const audioRef = useRef<HTMLAudioElement>(null);
-  const { isMuted, setIsMuted } = useAudio();
+  const { isMuted, setIsMuted, backgroundMusicRef } = useAudio();
+  const audioRef = backgroundMusicRef || useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     const audio = audioRef.current;
