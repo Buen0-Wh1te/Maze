@@ -5,7 +5,7 @@ export function Home() {
   const navigate = useNavigate();
 
   const handleStartGame = () => {
-    navigate("/game");
+    navigate("/game/1");
   };
 
   return (
