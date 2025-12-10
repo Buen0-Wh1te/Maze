@@ -27,7 +27,12 @@ export function Home() {
       <motion.h1
         className="text-9xl font-bold text-center"
         style={{
-          fontFamily: "'UnifrakturCook', cursive"
+          fontFamily: "'UnifrakturCook', cursive",
+          background: "radial-gradient(circle, #e8e8e8 0%, #d0d0d0 30%, #b0b0b0 60%, #909090 100%)",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+          backgroundClip: "text",
+          textShadow: "2px 2px 0px rgba(0,0,0,0.3), 4px 4px 0px rgba(0,0,0,0.2), 6px 6px 0px rgba(0,0,0,0.1)"
         }}
         animate={{
           x: [0, 3.5, 7, 7, 7, 3.5, 0, -3.5, -7, -7, -7, -3.5, 0],
