@@ -116,7 +116,7 @@ export function Victory() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 2, duration: 0.5 }}
-        className="flex gap-4"
+        className="flex gap-4 mt-8"
       >
         <Button onClick={handlePlayAgain}>
           Play Again
