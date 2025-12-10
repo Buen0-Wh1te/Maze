@@ -3,9 +3,11 @@ import { Button } from "../components/Button";
 import { useEffect, useState } from "react";
 import { fetchLevel } from "../services/api";
 import type { Level } from "../types/api";
+import { useGame } from "../hooks/useGame";
 
 export function Game() {
   const navigate = useNavigate();
+  const { pseudo } = useGame();
   const [level, setLevel] = useState<Level | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -40,6 +42,7 @@ export function Game() {
   return (
     <div className="bg-slate-700 text-white flex flex-col items-center justify-center min-h-screen gap-4">
       <h1 className="text-4xl font-bold">Game</h1>
+      <p>Hello, {pseudo} !</p>
       <h3 className="text-4xl font-bold">Level {level.id}</h3>
       <h3 className="text-4xl font-bold">Difficulty {level.difficulty}</h3>
       <div
