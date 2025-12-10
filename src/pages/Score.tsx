@@ -1,12 +1,38 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useEffect } from "react";
 import { Button } from "../components/Button";
+import { useAudio } from "../hooks/useAudio";
 import backgroundImage from "../assets/backgrounds/endgame.jpg";
+import gameoverSound from "../assets/sounds/gameover.mp3";
 
 export function Score() {
   const navigate = useNavigate();
+  const { backgroundMusicRef, isMuted } = useAudio();
+
+  useEffect(() => {
+    // Stop background music
+    if (backgroundMusicRef?.current) {
+      backgroundMusicRef.current.pause();
+    }
+
+    // Play gameover sound
+    if (!isMuted) {
+      const audio = new Audio(gameoverSound);
+      audio.volume = 0.6;
+      audio.play().catch((error) => {
+        console.log('Gameover sound play prevented:', error);
+      });
+    }
+  }, [backgroundMusicRef, isMuted]);
 
   const handlePlayAgain = () => {
+    // Resume background music when going back
+    if (backgroundMusicRef?.current) {
+      backgroundMusicRef.current.play().catch((error) => {
+        console.log('Background music resume prevented:', error);
+      });
+    }
     navigate("/");
   };
 
