@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/Button';
-import { useGame } from '../context/GameContext';
+import { useGame } from '../hooks/useGame';
 
 export function Game() {
   const navigate = useNavigate();

@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { GameProvider } from './context/GameContext';
+import { GameProvider } from './context/GameProvider';
 import { Home } from './pages/Home';
 import { Game } from './pages/Game';
 import { Score } from './pages/Score';
