@@ -28,7 +28,7 @@ export function Score() {
           maskImage: "linear-gradient(to bottom, transparent, black 5%, black 95%, transparent)",
           WebkitMaskImage: "linear-gradient(to bottom, transparent, black 5%, black 95%, transparent)",
         }}
-        initial={{ opacity: 0, scale: 1.5 }}
+        initial={{ opacity: 0, scale: 0.5 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1.5, ease: "easeOut" }}
       >
