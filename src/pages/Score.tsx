@@ -94,14 +94,13 @@ export function Score() {
       </motion.div>
       {score && (
         <motion.div
-          className="bg-black/80 px-8 py-4 rounded mt-4"
+          className="bg-black/60 px-4 py-2 rounded text-sm mt-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.5, duration: 0.5 }}
         >
-          <p className="text-4xl font-bold text-white">
-            {score.totalScore}
-          </p>
+          <span className="text-gray-400">Score: </span>
+          <span className="font-bold text-white">{score.totalScore}</span>
         </motion.div>
       )}
       <motion.div
