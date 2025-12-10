@@ -3,10 +3,10 @@ import { motion } from "framer-motion";
 import { useEffect } from "react";
 import { Button } from "../components/Button";
 import { useAudio } from "../hooks/useAudio";
-import backgroundImage from "../assets/backgrounds/endgame.jpg";
-import gameoverSound from "../assets/sounds/gameover.mp3";
+import backgroundImage from "../assets/backgrounds/victoryscreen.jpg";
+import successSound from "../assets/sounds/success.mp3";
 
-export function Score() {
+export function Victory() {
   const navigate = useNavigate();
   const { backgroundMusicRef, isMuted } = useAudio();
 
@@ -16,13 +16,13 @@ export function Score() {
     }
   };
 
-  const playGameoverSound = () => {
+  const playSuccessSound = () => {
     if (isMuted) return;
 
-    const audio = new Audio(gameoverSound);
+    const audio = new Audio(successSound);
     audio.volume = 0.6;
     audio.play().catch((error) => {
-      console.log('Gameover sound play prevented:', error);
+      console.log('Success sound play prevented:', error);
     });
   };
 
@@ -36,7 +36,7 @@ export function Score() {
 
   useEffect(() => {
     stopBackgroundMusic();
-    playGameoverSound();
+    playSuccessSound();
   }, [backgroundMusicRef, isMuted]);
 
   const handlePlayAgain = () => {
@@ -63,23 +63,33 @@ export function Score() {
           WebkitMaskImage: "linear-gradient(to bottom, transparent, black 5%, black 95%, transparent)",
         }}
         initial={{ opacity: 0, scale: 0.5 }}
-        animate={{ opacity: 1, scale: 1 }}
+        animate={{
+          opacity: 1,
+          scale: 1,
+        }}
         transition={{ duration: 1.5, ease: "easeOut" }}
       >
-        <h1
+        <motion.h1
           className="text-9xl font-bold text-center px-4"
           style={{
             fontFamily: "'UnifrakturCook', cursive",
-            background: "#8B0000",
+            background: "linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FFD700 100%)",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
             backgroundClip: "text",
-            textShadow:
-              "2px 2px 0px rgba(139,0,0,0.3), 4px 4px 0px rgba(139,0,0,0.2), 6px 6px 0px rgba(139,0,0,0.1)",
+            filter: "drop-shadow(0 0 20px rgba(255, 215, 0, 0.8)) drop-shadow(0 0 40px rgba(255, 215, 0, 0.4))",
           }}
+          animate={{
+            filter: [
+              "drop-shadow(0 0 15px rgba(255, 215, 0, 0.6)) drop-shadow(0 0 30px rgba(255, 215, 0, 0.3))",
+              "drop-shadow(0 0 20px rgba(255, 215, 0, 0.8)) drop-shadow(0 0 40px rgba(255, 215, 0, 0.4))",
+              "drop-shadow(0 0 15px rgba(255, 215, 0, 0.6)) drop-shadow(0 0 30px rgba(255, 215, 0, 0.3))",
+            ],
+          }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
         >
-          You fell to your death
-        </h1>
+          Victory!
+        </motion.h1>
       </motion.div>
       <motion.div
         initial={{ opacity: 0 }}
@@ -87,7 +97,7 @@ export function Score() {
         transition={{ delay: 2, duration: 0.5 }}
       >
         <Button onClick={handlePlayAgain} className="mt-8">
-          Try Again
+          Play Again
         </Button>
       </motion.div>
     </div>
