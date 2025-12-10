@@ -38,7 +38,7 @@ export function Score() {
 
   return (
     <div
-      className="text-white flex flex-col items-center justify-center min-h-screen"
+      className="text-white flex flex-col items-center justify-center min-h-screen overflow-x-hidden"
       style={{
         backgroundImage: `url(${backgroundImage})`,
         backgroundSize: "cover",
