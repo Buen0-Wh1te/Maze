@@ -3,7 +3,7 @@ import type { TileType } from "../types/game";
 interface TileProps {
   type: TileType;
   revealed: boolean;
-  isPlayer: boolean;
+  isPlayer?: boolean;
   onClick?: () => void;
 }
 
@@ -28,15 +28,19 @@ const getTileConfig = (type: TileType, revealed: boolean) => {
   );
 };
 
-export function Tile({ type, revealed, onClick }: TileProps) {
+export function Tile({ type, revealed, isPlayer = false, onClick }: TileProps) {
   const { style, label } = getTileConfig(type, revealed);
 
   return (
     <div
       onClick={onClick}
-      className={`w-12 h-12 border-2 flex items-center justify-center font-bold text-white cursor-pointer transition-colors hover:opacity-80 ${style}`}
+      className={`w-12 h-12 border-2 flex items-center justify-center font-bold text-white cursor-pointer transition-colors hover:opacity-80 
+        ${style}
+        ${revealed ? "opacity-100" : "opacity-20"}
+        ${isPlayer ? "bg-blue-500" : ""}
+        `}
     >
-      {label}
+      {isPlayer ? "P" : label}
     </div>
   );
 }
