@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { Music, VolumeX } from 'lucide-react';
+import { useAudio } from '../hooks/useAudio';
 
 interface BackgroundMusicProps {
   src: string;
@@ -8,7 +9,7 @@ interface BackgroundMusicProps {
 
 export function BackgroundMusic({ src, volume = 0.15 }: BackgroundMusicProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
-  const [isMuted, setIsMuted] = useState(true);
+  const { isMuted, setIsMuted } = useAudio();
 
   useEffect(() => {
     const audio = audioRef.current;
