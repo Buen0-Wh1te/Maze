@@ -46,7 +46,7 @@ export function Highscores() {
             </p>
           </div>
         ) : (
-          <div className="bg-slate-800/90 backdrop-blur-sm border border-pink-900/50 rounded overflow-hidden">
+          <div className="bg-slate-800/90 backdrop-blur-sm border border-slate-600 rounded overflow-hidden">
             <div className="grid grid-cols-[60px_minmax(150px,1fr)_100px_80px_80px_80px] gap-4 px-4 py-3 bg-slate-900/50 text-xs font-semibold text-gray-400 border-b border-slate-700">
               <div className="text-center">Rank</div>
               <div>Player</div>

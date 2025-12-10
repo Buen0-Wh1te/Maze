@@ -11,7 +11,7 @@ export function Victory() {
   const navigate = useNavigate();
   const location = useLocation();
   const { backgroundMusicRef, isMuted } = useAudio();
-  const { score, pseudo } = location.state || {};
+  const { score } = location.state || {};
   const scoreSavedRef = useRef(false);
 
   const stopBackgroundMusic = () => {
@@ -44,11 +44,11 @@ export function Victory() {
   }, [backgroundMusicRef, isMuted]);
 
   useEffect(() => {
-    if (score && pseudo && !scoreSavedRef.current) {
+    if (score && !scoreSavedRef.current) {
       saveScore(score, 1);
       scoreSavedRef.current = true;
     }
-  }, [score, pseudo]);
+  }, [score]);
 
   const handlePlayAgain = () => {
     resumeBackgroundMusic();

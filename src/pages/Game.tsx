@@ -65,6 +65,7 @@ export function Game() {
     const timeElapsed = startTime ? Math.floor((Date.now() - startTime) / 1000) : 0;
 
     return {
+      pseudo,
       tilesRevealed,
       moves,
       timeElapsed,
@@ -92,13 +93,13 @@ export function Game() {
 
     if (updated[row][col].type === "E") {
       const score = calculateScore();
-      navigate("/victory", { state: { score, pseudo } });
+      navigate("/victory", { state: { score } });
     }
   };
 
   const handleEndGame = () => {
     const score = calculateScore();
-    navigate("/score", { state: { score, pseudo } });
+    navigate("/score", { state: { score } });
   };
 
   if (loading) {
