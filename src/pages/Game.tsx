@@ -24,12 +24,40 @@ export function Game() {
   if (loading) return <p>Loading level…</p>;
   if (!level) return <p>Level not found.</p>;
 
+  const cellColor = (cell: string) => {
+    switch (cell) {
+      case "wall":
+        return "bg-gray-800";
+      case "start":
+        return "bg-green-500";
+      case "end":
+        return "bg-red-500";
+      default:
+        return "bg-gray-600"; // empty
+    }
+  };
+
   return (
     <div className="bg-slate-700 text-white flex flex-col items-center justify-center min-h-screen gap-4">
       <h1 className="text-4xl font-bold">Game</h1>
       <h3 className="text-4xl font-bold">Level {level.id}</h3>
-      <pre>{JSON.stringify(level, null, 2)}</pre>
-      <p className="text-gray-400">Game screen - Grid will be displayed here</p>
+      <h3 className="text-4xl font-bold">Difficulty {level.difficulty}</h3>
+      <div
+        className="grid gap-1"
+        style={{
+          gridTemplateColumns: `repeat(${level.cols}, 40px)`,
+          gridTemplateRows: `repeat(${level.rows}, 40px)`,
+        }}
+      >
+        {level.grid.flatMap((row, y) =>
+          row.map((cell, x) => (
+            <div
+              key={`${x}-${y}`}
+              className={`w-10 h-10 border border-gray-700 ${cellColor(cell)}`}
+            />
+          ))
+        )}
+      </div>
       <Button onClick={handleEndGame}>End Game</Button>
     </div>
   );
