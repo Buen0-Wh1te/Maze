@@ -14,7 +14,7 @@ export function useInputSound() {
   const playSound = useCallback(() => {
     if (audioRef.current && !isMuted) {
       audioRef.current.currentTime = 0;
-      audioRef.current.playbackRate = 0.9 + Math.random() * 0.2;
+      audioRef.current.playbackRate = 0.8 + Math.random() * 0.4;
       audioRef.current.play().catch((error) => {
         console.log('Audio play prevented:', error);
       });
