@@ -11,12 +11,10 @@ export function Score() {
   const { backgroundMusicRef, isMuted } = useAudio();
 
   useEffect(() => {
-    // Stop background music
     if (backgroundMusicRef?.current) {
       backgroundMusicRef.current.pause();
     }
 
-    // Play gameover sound
     if (!isMuted) {
       const audio = new Audio(gameoverSound);
       audio.volume = 0.6;
@@ -27,7 +25,6 @@ export function Score() {
   }, [backgroundMusicRef, isMuted]);
 
   const handlePlayAgain = () => {
-    // Resume background music when going back
     if (backgroundMusicRef?.current) {
       backgroundMusicRef.current.play().catch((error) => {
         console.log('Background music resume prevented:', error);
