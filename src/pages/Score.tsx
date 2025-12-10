@@ -10,26 +10,37 @@ export function Score() {
   const navigate = useNavigate();
   const { backgroundMusicRef, isMuted } = useAudio();
 
-  useEffect(() => {
+  const stopBackgroundMusic = () => {
     if (backgroundMusicRef?.current) {
       backgroundMusicRef.current.pause();
     }
+  };
 
-    if (!isMuted) {
-      const audio = new Audio(gameoverSound);
-      audio.volume = 0.6;
-      audio.play().catch((error) => {
-        console.log('Gameover sound play prevented:', error);
-      });
-    }
-  }, [backgroundMusicRef, isMuted]);
+  const playGameoverSound = () => {
+    if (isMuted) return;
 
-  const handlePlayAgain = () => {
+    const audio = new Audio(gameoverSound);
+    audio.volume = 0.6;
+    audio.play().catch((error) => {
+      console.log('Gameover sound play prevented:', error);
+    });
+  };
+
+  const resumeBackgroundMusic = () => {
     if (backgroundMusicRef?.current) {
       backgroundMusicRef.current.play().catch((error) => {
         console.log('Background music resume prevented:', error);
       });
     }
+  };
+
+  useEffect(() => {
+    stopBackgroundMusic();
+    playGameoverSound();
+  }, [backgroundMusicRef, isMuted]);
+
+  const handlePlayAgain = () => {
+    resumeBackgroundMusic();
     navigate("/");
   };
 
