@@ -6,6 +6,7 @@ import { Home } from './pages/Home';
 import { Game } from './pages/Game';
 import { Score } from './pages/Score';
 import { Victory } from './pages/Victory';
+import { Highscores } from './pages/Highscores';
 import backgroundMusic from './assets/musics/background.mp3';
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
             <Route path="/game/:levelId" element={<Game />} />
             <Route path="/score" element={<Score />} />
             <Route path="/victory" element={<Victory />} />
+            <Route path="/highscores" element={<Highscores />} />
           </Routes>
         </BrowserRouter>
       </GameProvider>
