@@ -18,12 +18,20 @@ export function Game() {
     row: number;
     col: number;
   } | null>(null);
+  const [moves, setMoves] = useState(0);
+  const [startTime, setStartTime] = useState<number | null>(null);
 
   useEffect(() => {
     if (levelId) {
       loadLevel(Number(levelId));
     }
   }, [levelId]);
+
+  useEffect(() => {
+    if (!loading && !startTime) {
+      setStartTime(Date.now());
+    }
+  }, [loading, startTime]);
 
   const loadLevel = async (levelId: number) => {
     try {
@@ -52,6 +60,18 @@ export function Game() {
     }
   };
 
+  const calculateScore = () => {
+    const tilesRevealed = tiles.flat().filter(tile => tile.revealed).length;
+    const timeElapsed = startTime ? Math.floor((Date.now() - startTime) / 1000) : 0;
+
+    return {
+      tilesRevealed,
+      moves,
+      timeElapsed,
+      totalScore: tilesRevealed * 10 - moves * 2 - timeElapsed,
+    };
+  };
+
   const handleTileClick = (row: number, col: number) => {
     if (!playerPos) return;
 
@@ -64,16 +84,21 @@ export function Game() {
     if (tiles[row][col].type === "W") return;
 
     setPlayerPos({ row, col });
+    setMoves(prev => prev + 1);
 
     const updated = [...tiles];
     updated[row][col].revealed = true;
     setTiles(updated);
 
-    console.log("Player moved to:", row, col);
+    if (updated[row][col].type === "E") {
+      const score = calculateScore();
+      navigate("/victory", { state: { score, pseudo } });
+    }
   };
 
   const handleEndGame = () => {
-    navigate("/score");
+    const score = calculateScore();
+    navigate("/score", { state: { score, pseudo } });
   };
 
   if (loading) {
@@ -84,10 +109,16 @@ export function Game() {
     );
   }
 
+  const tilesRevealed = tiles.flat().filter(tile => tile.revealed).length;
+
   return (
     <div className="bg-slate-700 text-white flex flex-col items-center min-h-screen p-8 gap-4">
       <h1 className="text-4xl font-bold">{level?.name}</h1>
       <p className="text-gray-400">Playing as: {pseudo}</p>
+      <div className="flex gap-6 text-sm text-gray-300">
+        <span>Moves: {moves}</span>
+        <span>Tiles Revealed: {tilesRevealed}</span>
+      </div>
       <div className="flex flex-col gap-0">
         {tiles.map((row, rowIndex) => (
           <div key={rowIndex} className="flex gap-0">
