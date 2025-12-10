@@ -13,7 +13,7 @@ export function Home() {
 
   const handleStartGame = () => {
     if (pseudo.trim()) {
-      navigate('/game');
+      navigate("/game/1");
     }
   };
 
@@ -22,9 +22,9 @@ export function Home() {
       className="text-white flex flex-col items-center justify-center min-h-screen"
       style={{
         backgroundImage: `url(${backgroundImage})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
       }}
     >
       <motion.img
@@ -34,12 +34,12 @@ export function Home() {
         animate={{
           x: [0, 3.5, 7, 7, 7, 3.5, 0, -3.5, -7, -7, -7, -3.5, 0],
           y: [0, -3.5, -5, -6, -7, -7, -7, -7, -7, -6, -5, -3.5, 0],
-          rotate: [0, -1, -2, -2, -1.5, -0.5, 0, 0.5, 1.5, 2, 2, 1, 0]
+          rotate: [0, -1, -2, -2, -1.5, -0.5, 0, 0.5, 1.5, 2, 2, 1, 0],
         }}
         transition={{
           duration: 12,
           repeat: Infinity,
-          ease: "linear"
+          ease: "linear",
         }}
       />
       <p className="mt-2 text-center max-w-2xl px-4 text-lg text-gray-300">
@@ -55,7 +55,11 @@ export function Home() {
         onKeyDown={onKeyDown}
         className="px-4 py-2 rounded bg-slate-600 text-white placeholder-gray-400 border border-slate-500 focus:border-pink-800 focus:outline-none mt-8"
       />
-      <Button onClick={handleStartGame} disabled={!pseudo.trim()} className="mt-4">
+      <Button
+        onClick={handleStartGame}
+        disabled={!pseudo.trim()}
+        className="mt-4"
+      >
         Start Game
       </Button>
     </div>
