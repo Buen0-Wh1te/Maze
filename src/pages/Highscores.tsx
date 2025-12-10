@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/Button";
 import { getScores, clearScores } from "../utils/scores";
+import backgroundImage from "../assets/backgrounds/dungeon-corridor.webp";
 
 export function Highscores() {
   const navigate = useNavigate();
@@ -14,25 +15,54 @@ export function Highscores() {
   };
 
   return (
-    <div className="bg-slate-700 text-white min-h-screen p-8">
+    <div
+      className="text-white min-h-screen p-8"
+      style={{
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
+    >
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-5xl font-bold text-center mb-8">Highscores</h1>
+        <h1
+          className="text-6xl font-bold text-center mb-8"
+          style={{
+            fontFamily: "'UnifrakturCook', cursive",
+            background: "linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FFD700 100%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            backgroundClip: "text",
+            textShadow: "2px 2px 0px rgba(255, 215, 0, 0.3)",
+          }}
+        >
+          Hall of Champions
+        </h1>
 
         {scores.length === 0 ? (
-          <p className="text-center text-gray-400 text-xl">No scores yet. Play a game to set a record!</p>
+          <div className="bg-slate-800/90 backdrop-blur-sm border-2 border-slate-600 rounded-lg p-8">
+            <p className="text-center text-gray-300 text-xl">
+              No scores yet. Play a game to set a record!
+            </p>
+          </div>
         ) : (
           <div className="space-y-4">
             {scores.map((score, index) => (
               <div
                 key={index}
-                className="bg-slate-800 border-2 border-slate-600 rounded-lg p-6 flex items-center justify-between hover:border-slate-500 transition-colors"
+                className="bg-slate-800/90 backdrop-blur-sm border-2 border-pink-900/50 rounded-lg p-6 flex items-center justify-between hover:border-pink-800 transition-colors"
               >
                 <div className="flex items-center gap-6">
-                  <div className="text-4xl font-bold text-yellow-400 w-12 text-center">
+                  <div
+                    className="text-4xl font-bold w-12 text-center"
+                    style={{
+                      color: index === 0 ? "#FFD700" : index === 1 ? "#C0C0C0" : index === 2 ? "#CD7F32" : "#FFA500",
+                    }}
+                  >
                     #{index + 1}
                   </div>
                   <div>
-                    <p className="text-2xl font-bold">{score.pseudo}</p>
+                    <p className="text-2xl font-bold text-pink-200">{score.pseudo}</p>
                     <p className="text-sm text-gray-400">
                       {new Date(score.date).toLocaleDateString()} at{" "}
                       {new Date(score.date).toLocaleTimeString()}
@@ -42,19 +72,19 @@ export function Highscores() {
 
                 <div className="flex gap-8 text-right">
                   <div>
-                    <p className="text-3xl font-bold text-green-400">{score.totalScore}</p>
+                    <p className="text-3xl font-bold text-yellow-400">{score.totalScore}</p>
                     <p className="text-xs text-gray-400">Score</p>
                   </div>
                   <div>
-                    <p className="text-lg">{score.tilesRevealed}</p>
+                    <p className="text-lg text-gray-200">{score.tilesRevealed}</p>
                     <p className="text-xs text-gray-400">Tiles</p>
                   </div>
                   <div>
-                    <p className="text-lg">{score.moves}</p>
+                    <p className="text-lg text-gray-200">{score.moves}</p>
                     <p className="text-xs text-gray-400">Moves</p>
                   </div>
                   <div>
-                    <p className="text-lg">{score.timeElapsed}s</p>
+                    <p className="text-lg text-gray-200">{score.timeElapsed}s</p>
                     <p className="text-xs text-gray-400">Time</p>
                   </div>
                 </div>
