@@ -93,6 +93,9 @@ export function Game() {
                 key={`${rowIndex}-${colIndex}`}
                 type={tile.type}
                 revealed={tile.revealed}
+                isPlayer={
+                  playerPos?.row === rowIndex && playerPos?.col === colIndex
+                }
                 onClick={() => handleTileClick(rowIndex, colIndex)}
               />
             ))}
