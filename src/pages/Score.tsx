@@ -23,8 +23,8 @@ export function Score() {
       <motion.div
         className="w-full flex items-center justify-center py-8"
         style={{
-          backgroundColor: "rgba(0, 0, 0, 0.5)",
-          backdropFilter: "blur(10px)",
+          backgroundColor: "rgba(0, 0, 0, 0.85)",
+          backdropFilter: "blur(20px)",
         }}
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
