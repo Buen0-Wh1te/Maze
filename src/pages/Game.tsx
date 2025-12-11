@@ -126,14 +126,16 @@ export function Game() {
 
     if (!isAdjacentToPlayer) return;
 
-    if (tiles[row][col].type === "W") return;
-
-    setPlayerPos({ row, col });
-    setMoves(prev => prev + 1);
-
     const updated = [...tiles];
     updated[row][col].revealed = true;
     setTiles(updated);
+
+    // If it's a wall, just reveal it but don't move
+    if (tiles[row][col].type === "W") return;
+
+    // Move player onto the tile (only for non-walls)
+    setPlayerPos({ row, col });
+    setMoves(prev => prev + 1);
 
     if (updated[row][col].type === "E") {
       const score = calculateScore();
