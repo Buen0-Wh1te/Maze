@@ -196,19 +196,10 @@ async function findMatchingTile(targetBitmask: number, type: TileType): Promise<
     for (let x = 0; x < tilesPerRow; x++) {
       const tileBitmask = readBitmaskFromBitmap(imageData, x, y);
 
-      // DEBUG: Log first row to verify bitmap reading
-      if (y === 0) {
-        console.log(`Bitmap[${x},${y}] = ${tileBitmask.toString(2).padStart(8, '0')} (${tileBitmask})`);
-      }
-
-      // Exact match - return immediately
       if (tileBitmask === targetBitmask) {
-        console.log(`✅ Exact match for ${targetBitmask} at [${x}, ${y}]`);
         return [x, y];
       }
 
-      // Calculate weighted distance for closest match
-      // Cardinals have 10x weight, diagonals have 1x weight
       const distance = weightedHammingDistance(tileBitmask, targetBitmask);
       if (distance < closestDistance) {
         closestDistance = distance;
@@ -217,8 +208,6 @@ async function findMatchingTile(targetBitmask: number, type: TileType): Promise<
     }
   }
 
-  // Return closest match found
-  console.log(`⚠️ No exact match for ${targetBitmask.toString(2).padStart(8, '0')} (${targetBitmask}), using closest: [${closestMatch[0]}, ${closestMatch[1]}] with distance ${closestDistance}`);
   return closestMatch;
 }
 

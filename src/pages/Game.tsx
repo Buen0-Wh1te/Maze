@@ -68,7 +68,9 @@ export function Game() {
           position: { row: rowIndex, col: colIndex },
           type: cell as TileType,
           content: cell,
-          revealed: true, // DEBUG: Show all tiles
+          revealed:
+            rowIndex === levelData.start.row &&
+            colIndex === levelData.start.col,
           enemy: null,
         }))
       );
@@ -114,34 +116,6 @@ export function Game() {
   };
 
   const handleTileClick = (row: number, col: number) => {
-    // DEBUG: Show tile information
-    const neighbors = getTileNeighbors(row, col);
-    const tileType = tiles[row][col].type === "W" ? "wall" : "path";
-    const sprite = calculateTileSprite(tileType, neighbors);
-    const bitmask = calculateTileBitmask(neighbors);
-
-    console.group(`🔍 Tile Debug: [${row}, ${col}]`);
-    console.log(`Type: ${tiles[row][col].type} (${tileType})`);
-    console.log(`Position: row=${row}, col=${col}`);
-    console.log(`Texture coords: x=${sprite.x}, y=${sprite.y}`);
-
-    // Show bitmask with bit positions
-    const bits = bitmask.toString(2).padStart(8, '0');
-    console.log(`Bitmask: ${bits} (${bitmask})`);
-    console.log('Bit order: [0=TL][1=T][2=TR][3=R][4=BR][5=B][6=BL][7=L]');
-    console.log(`Bits: [${bits[7]}][${bits[6]}][${bits[5]}][${bits[4]}][${bits[3]}][${bits[2]}][${bits[1]}][${bits[0]}]`);
-
-    console.log('Neighbors (visual):');
-    console.log(`  [${neighbors.topLeft ? 1 : 0}][${neighbors.top ? 1 : 0}][${neighbors.topRight ? 1 : 0}]`);
-    console.log(`  [${neighbors.left ? 1 : 0}] X [${neighbors.right ? 1 : 0}]`);
-    console.log(`  [${neighbors.bottomLeft ? 1 : 0}][${neighbors.bottom ? 1 : 0}][${neighbors.bottomRight ? 1 : 0}]`);
-
-    console.log('Bitmask (clockwise from TL):');
-    console.log(`  [${(bitmask >> 0) & 1}][${(bitmask >> 1) & 1}][${(bitmask >> 2) & 1}]`);
-    console.log(`  [${(bitmask >> 7) & 1}] X [${(bitmask >> 3) & 1}]`);
-    console.log(`  [${(bitmask >> 6) & 1}][${(bitmask >> 5) & 1}][${(bitmask >> 4) & 1}]`);
-    console.groupEnd();
-
     if (!playerPos) return;
 
     if (!isAdjacentToRevealed(row, col)) return;
