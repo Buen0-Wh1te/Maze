@@ -29,7 +29,10 @@ const getTileConfig = (type: TileType, revealed: boolean) => {
 };
 
 export function Tile({ type, revealed, isPlayer = false, onClick }: TileProps) {
-  const { style, label } = getTileConfig(type, revealed);
+  const isAlwaysVisible = type === "E";
+  const visible = revealed || isAlwaysVisible;
+
+  const { style, label } = getTileConfig(type, visible);
 
   return (
     <div
