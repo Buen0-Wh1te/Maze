@@ -35,14 +35,18 @@ export function useGameState(levelId: number | undefined, pseudo: string) {
       setLevel(levelData);
 
       const initialTiles: TileState[][] = levelData.grid.map((row, rowIndex) =>
-        row.map((cell, colIndex) => ({
-          position: { row: rowIndex, col: colIndex },
-          type: cell as TileType,
-          content: cell,
-          revealed:
-            rowIndex === levelData.start.row && colIndex === levelData.start.col,
-          enemy: null,
-        }))
+        row.map((cell, colIndex) => {
+          const rawType = cell.split(":")[0];
+          const type = rawType as TileType;
+
+          return {
+            position: { row: rowIndex, col: colIndex },
+            type,
+            content: cell,
+            revealed:
+              rowIndex === levelData.start.row && colIndex === levelData.start.col,
+          };
+        })
       );
 
       setTiles(initialTiles);
@@ -85,11 +89,18 @@ export function useGameState(levelId: number | undefined, pseudo: string) {
     setMoves((prev) => prev + 1);
   };
 
-  const checkVictory = (row: number, col: number) => {
+  const checkVictory = async (row: number, col: number) => {
     if (tiles[row][col].type === TILE_TYPES.END) {
-      const score = calculateScore();
-      navigate("/victory", { state: { score } });
-      return true;
+      const nextLevelId = levelId ? Number(levelId) + 1 : 2;
+      try {
+        await fetchLevel(nextLevelId);
+        navigate(`/game/${nextLevelId}`);
+        return true;
+      } catch {
+        const score = calculateScore();
+        navigate("/victory", { state: { score } });
+        return true;
+      }
     }
     return false;
   };

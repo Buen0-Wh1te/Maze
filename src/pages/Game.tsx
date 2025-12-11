@@ -36,7 +36,7 @@ export function Game() {
     });
   }, []);
 
-  const handleTileClick = (row: number, col: number) => {
+  const handleTileClick = async (row: number, col: number) => {
     if (!playerPos) return;
     if (!isAdjacentToRevealed(row, col, tiles)) return;
     if (!isAdjacentToPlayer(row, col, playerPos)) return;
@@ -46,7 +46,7 @@ export function Game() {
     if (updated[row][col].type === TILE_TYPES.WALL) return;
 
     movePlayer(row, col);
-    checkVictory(row, col);
+    await checkVictory(row, col);
   };
 
   if (loading) {
