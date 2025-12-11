@@ -43,9 +43,8 @@ export function Tile({ type, revealed, isPlayer = false, onClick, spriteX = 0, s
   return (
     <div
       onClick={onClick}
-      className={`absolute inset-0 flex items-center justify-center font-bold text-white cursor-pointer transition-all hover:brightness-110
+      className={`absolute inset-0 flex items-center justify-center font-bold text-white cursor-pointer hover:brightness-110
         ${revealed ? (useSprite ? "" : config.fallbackColor) : "bg-gray-800"}
-        ${revealed ? "opacity-100" : "opacity-100"}
         ${isPlayer ? "ring-4 ring-blue-400 ring-inset" : ""}
       `}
       style={
