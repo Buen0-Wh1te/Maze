@@ -1,14 +1,18 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Button } from "../components/Button";
 import { useAudio } from "../hooks/useAudio";
+import { saveScore } from "../utils/scores";
 import backgroundImage from "../assets/backgrounds/victoryscreen.jpg";
 import successSound from "../assets/sounds/success.mp3";
 
 export function Victory() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { backgroundMusicRef, isMuted } = useAudio();
+  const { score } = location.state || {};
+  const scoreSavedRef = useRef(false);
 
   const stopBackgroundMusic = () => {
     if (backgroundMusicRef?.current) {
@@ -38,6 +42,13 @@ export function Victory() {
     stopBackgroundMusic();
     playSuccessSound();
   }, [backgroundMusicRef, isMuted]);
+
+  useEffect(() => {
+    if (score && !scoreSavedRef.current) {
+      saveScore(score, 1);
+      scoreSavedRef.current = true;
+    }
+  }, [score]);
 
   const handlePlayAgain = () => {
     resumeBackgroundMusic();
@@ -91,13 +102,28 @@ export function Victory() {
           Victory!
         </motion.h1>
       </motion.div>
+      {score && (
+        <motion.div
+          className="bg-black px-4 py-2 rounded text-sm mt-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.5, duration: 0.5 }}
+        >
+          <span className="text-gray-400">Score: </span>
+          <span className="font-bold text-white">{score.totalScore}</span>
+        </motion.div>
+      )}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 2, duration: 0.5 }}
+        className="flex gap-4 mt-8"
       >
-        <Button onClick={handlePlayAgain} className="mt-8">
+        <Button onClick={handlePlayAgain}>
           Play Again
+        </Button>
+        <Button onClick={() => navigate("/highscores")}>
+          View Highscores
         </Button>
       </motion.div>
     </div>
