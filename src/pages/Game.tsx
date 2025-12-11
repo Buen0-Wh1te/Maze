@@ -4,15 +4,13 @@ import { Button } from "../components/Button";
 import { Tile } from "../components/Tile";
 import { useGame } from "../hooks/useGame";
 import { fetchLevel } from "../services/api";
-import { type Obstacle, type Enemy, type Level } from "../types/api";
+import { type Level } from "../types/api";
 import type { TileState, TileType } from "../types/game";
 
 export function Game() {
   const navigate = useNavigate();
   const { levelId } = useParams<{ levelId: string }>();
   const { pseudo } = useGame();
-  const [enemies, setEnemies] = useState<Enemy[]>([]);
-  const [obstacles, setObstacles] = useState<Obstacle[]>([]);
   const [level, setLevel] = useState<Level | null>(null);
   const [tiles, setTiles] = useState<TileState[][]>([]);
   const [loading, setLoading] = useState(true);
@@ -43,25 +41,8 @@ export function Game() {
 
       const initialTiles: TileState[][] = levelData.grid.map((row, rowIndex) =>
         row.map((cell, colIndex) => {
-          let enemyIcon: string | undefined;
-          let obstacleIcon: string | undefined;
-          let type: TileType = cell.split(":")[0] as TileType;
-
-          if (cell.startsWith("M:")) {
-            const enemyType = cell.split(":")[1];
-            const enemy = levelData.enemies.find((e) => e.type === enemyType);
-            if (enemy) enemyIcon = enemy.icon;
-            type = "C";
-          }
-
-          if (cell.startsWith("O:")) {
-            const obstacleType = cell.split(":")[1];
-            const obstacle = levelData.obstacles.find(
-              (o) => o.type === obstacleType
-            );
-            if (obstacle) obstacleIcon = obstacle.icon;
-            type = "C";
-          }
+          const rawType = cell.split(":")[0];
+          const type = rawType as TileType;
 
           return {
             position: { row: rowIndex, col: colIndex },
@@ -70,16 +51,12 @@ export function Game() {
             revealed:
               rowIndex === levelData.start.row &&
               colIndex === levelData.start.col,
-            enemyIcon,
-            obstacleIcon,
           };
         })
       );
 
       setTiles(initialTiles);
       setPlayerPos(levelData.start);
-      setEnemies(levelData.enemies);
-      setObstacles(levelData.obstacles);
     } catch (error) {
       console.error("Failed to load level:", error);
     } finally {
