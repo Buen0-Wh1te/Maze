@@ -79,7 +79,7 @@ export function Game() {
     };
   };
 
-  const handleTileClick = (row: number, col: number) => {
+  const handleTileClick = async (row: number, col: number) => {
     if (!playerPos) return;
 
     const isAdjacent =
@@ -102,8 +102,16 @@ export function Game() {
     setTiles(updated);
 
     if (updated[row][col].type === "E") {
-      const score = calculateScore();
-      navigate("/victory", { state: { score } });
+      const nextLevelId = Number(levelId) + 1;
+      try {
+        await fetchLevel(nextLevelId);
+
+        navigate(`/game/${nextLevelId}`);
+      } catch {
+        const score = calculateScore();
+        navigate("/victory", { state: { score } });
+      }
+      return;
     }
   };
 
