@@ -16,23 +16,21 @@ export interface Neighbors {
   bottomRight: boolean;
 }
 
-// Cached bitmap data
-const bitmapCache: { [key: string]: ImageData | null } = {
-  path: null,
-  wall: null,
-};
+// Cached bitmap MASK data - the pattern reference (pink/white), not the decorative tileset
+let bitmapMaskCache: ImageData | null = null;
 
 /**
- * Load and cache bitmap image data
+ * Load and cache bitmap MASK image data
+ * This is the bitmap.png with pink (connected) and white (not connected) pixels
+ * This is SEPARATE from the decorative tileset textures
  */
-async function loadBitmapData(type: TileType): Promise<ImageData> {
-  if (bitmapCache[type]) {
-    return bitmapCache[type]!;
+async function loadBitmapMask(): Promise<ImageData> {
+  if (bitmapMaskCache) {
+    return bitmapMaskCache;
   }
 
-  const bitmapPath = type === "wall"
-    ? "/src/assets/bitmap/bitmap.png"
-    : "/src/assets/bitmap/bitmap.png"; // Same bitmap for now
+  // Use the actual bitmap mask image (the reference pattern, not the pretty textures)
+  const bitmapPath = "/src/assets/bitmap/bitmap.png";
 
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -47,7 +45,7 @@ async function loadBitmapData(type: TileType): Promise<ImageData> {
       }
       ctx.drawImage(img, 0, 0);
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      bitmapCache[type] = imageData;
+      bitmapMaskCache = imageData;
       resolve(imageData);
     };
     img.onerror = reject;
@@ -146,16 +144,34 @@ export function calculateTileBitmask(neighbors: Neighbors): number {
 }
 
 /**
- * Calculate hamming distance between two bitmasks
- * (number of differing bits)
+ * Calculate weighted hamming distance between two bitmasks
+ * Cardinal directions (T, R, B, L) have much higher weight than diagonals
+ *
+ * Bit layout:
+ * [bit0=TL][bit1=T][bit2=TR]
+ * [bit7=L ]   X   [bit3=R ]
+ * [bit6=BL][bit5=B][bit4=BR]
+ *
+ * Weights:
+ * - Cardinal mismatch: 10 points each
+ * - Diagonal mismatch: 1 point each
  */
-function hammingDistance(a: number, b: number): number {
-  let xor = a ^ b;
+function weightedHammingDistance(a: number, b: number): number {
+  const xor = a ^ b;
   let distance = 0;
-  while (xor > 0) {
-    distance += xor & 1;
-    xor >>= 1;
-  }
+
+  // Cardinal bits (1, 3, 5, 7) - weight 10 each
+  if (xor & (1 << 1)) distance += 10; // Top
+  if (xor & (1 << 3)) distance += 10; // Right
+  if (xor & (1 << 5)) distance += 10; // Bottom
+  if (xor & (1 << 7)) distance += 10; // Left
+
+  // Diagonal bits (0, 2, 4, 6) - weight 1 each
+  if (xor & (1 << 0)) distance += 1; // Top-Left
+  if (xor & (1 << 2)) distance += 1; // Top-Right
+  if (xor & (1 << 4)) distance += 1; // Bottom-Right
+  if (xor & (1 << 6)) distance += 1; // Bottom-Left
+
   return distance;
 }
 
@@ -164,7 +180,7 @@ function hammingDistance(a: number, b: number): number {
  * If exact match not found, returns closest match
  */
 async function findMatchingTile(targetBitmask: number, type: TileType): Promise<[number, number]> {
-  const imageData = await loadBitmapData(type);
+  const imageData = await loadBitmapMask();
 
   // Bitmap is 397×133 pixels: 12×4 grid of 32px tiles with 1px gaps/border
   // Formula: width = border + (tileSize + gap) * cols + border = 1 + 33*12 + 1 = 398
@@ -173,20 +189,27 @@ async function findMatchingTile(targetBitmask: number, type: TileType): Promise<
   const numRows = 4;
 
   let closestMatch: [number, number] = [0, 0];
-  let closestDistance = 8; // Max hamming distance for 8 bits
+  let closestDistance = 44; // Max weighted distance: 4 cardinals * 10 + 4 diagonals * 1 = 44
 
   // Search through bitmap tiles
   for (let y = 0; y < numRows; y++) {
     for (let x = 0; x < tilesPerRow; x++) {
       const tileBitmask = readBitmaskFromBitmap(imageData, x, y);
 
+      // DEBUG: Log first row to verify bitmap reading
+      if (y === 0) {
+        console.log(`Bitmap[${x},${y}] = ${tileBitmask.toString(2).padStart(8, '0')} (${tileBitmask})`);
+      }
+
       // Exact match - return immediately
       if (tileBitmask === targetBitmask) {
+        console.log(`✅ Exact match for ${targetBitmask} at [${x}, ${y}]`);
         return [x, y];
       }
 
-      // Calculate distance for closest match
-      const distance = hammingDistance(tileBitmask, targetBitmask);
+      // Calculate weighted distance for closest match
+      // Cardinals have 10x weight, diagonals have 1x weight
+      const distance = weightedHammingDistance(tileBitmask, targetBitmask);
       if (distance < closestDistance) {
         closestDistance = distance;
         closestMatch = [x, y];
@@ -195,6 +218,7 @@ async function findMatchingTile(targetBitmask: number, type: TileType): Promise<
   }
 
   // Return closest match found
+  console.log(`⚠️ No exact match for ${targetBitmask.toString(2).padStart(8, '0')} (${targetBitmask}), using closest: [${closestMatch[0]}, ${closestMatch[1]}] with distance ${closestDistance}`);
   return closestMatch;
 }
 
@@ -277,8 +301,7 @@ function getTileSpriteSync(bitmask: number, type: TileType): { x: number; y: num
   return { x, y, type };
 }
 
-// Pre-load bitmaps
+// Pre-load bitmap mask
 if (typeof window !== "undefined") {
-  loadBitmapData("path").catch(console.error);
-  loadBitmapData("wall").catch(console.error);
+  loadBitmapMask().catch(console.error);
 }
