@@ -214,6 +214,13 @@ async function findMatchingTile(targetBitmask: number, type: TileType): Promise<
 // Cache for bitmask to position mapping
 const tilePositionCache: { [key: string]: [number, number] } = {};
 
+// Callback to trigger re-render when cache updates
+let onCacheUpdate: (() => void) | null = null;
+
+export function setTilesetCacheUpdateCallback(callback: () => void) {
+  onCacheUpdate = callback;
+}
+
 /**
  * Calculate sprite position based on tile type and neighbors
  */
@@ -230,10 +237,13 @@ export function calculateTileSprite(
     return { x, y, type };
   }
 
-  // For now, use synchronous fallback (async loading happens in background)
-  // This will be replaced with cached values after first load
+  // Start async bitmap matching
   findMatchingTile(bitmask, type).then(([x, y]) => {
     tilePositionCache[cacheKey] = [x, y];
+    // Trigger re-render when cache updates
+    if (onCacheUpdate) {
+      onCacheUpdate();
+    }
   });
 
   // Temporary fallback using simple logic until bitmap loads

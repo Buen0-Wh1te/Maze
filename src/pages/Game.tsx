@@ -6,7 +6,7 @@ import { useGame } from "../hooks/useGame";
 import { fetchLevel } from "../services/api";
 import type { Level } from "../types/api";
 import type { TileState, TileType } from "../types/game";
-import { calculateTileSprite, calculateTileBitmask } from "../utils/tileset";
+import { calculateTileSprite, calculateTileBitmask, setTilesetCacheUpdateCallback } from "../utils/tileset";
 import backgroundImage from "../assets/backgrounds/game.jpg";
 
 export function Game() {
@@ -23,6 +23,13 @@ export function Game() {
   const [moves, setMoves] = useState(0);
   const [startTime, setStartTime] = useState<number | null>(null);
   const [gridScale, setGridScale] = useState(1);
+  const [, forceUpdate] = useState({});
+
+  useEffect(() => {
+    setTilesetCacheUpdateCallback(() => {
+      forceUpdate({});
+    });
+  }, []);
 
   useEffect(() => {
     if (levelId) {
@@ -150,11 +157,21 @@ export function Game() {
 
   const getTileNeighbors = (row: number, col: number) => {
     const isSameType = (r: number, c: number) => {
+      // Out of bounds = different (no connection)
       if (r < 0 || r >= tiles.length || c < 0 || c >= tiles[0].length) {
         return false;
       }
+
+      const neighborTileData = tiles[r][c];
+
+      // Unrevealed neighbor = different (no connection)
+      if (!neighborTileData.revealed) {
+        return false;
+      }
+
+      // Both revealed: check if same type
       const currentTile = tiles[row][col].type;
-      const neighborTile = tiles[r][c].type;
+      const neighborTile = neighborTileData.type;
 
       // Both are paths (C, S, E, M, K, D, A, O) - paths connect to paths
       const pathTypes = ["C", "S", "E", "M", "K", "D", "A", "O"];
