@@ -2,7 +2,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useEffect, useRef } from "react";
 import { Button } from "../components/Button";
-import { useAudio } from "../hooks/useAudio";
+import { useEndGameAudio } from "../hooks/useEndGameAudio";
 import { saveScore } from "../utils/scores";
 import backgroundImage from "../assets/backgrounds/victoryscreen.jpg";
 import successSound from "../assets/sounds/success.mp3";
@@ -10,38 +10,16 @@ import successSound from "../assets/sounds/success.mp3";
 export function Victory() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { backgroundMusicRef, isMuted } = useAudio();
   const { score } = location.state || {};
   const scoreSavedRef = useRef(false);
-
-  const stopBackgroundMusic = () => {
-    if (backgroundMusicRef?.current) {
-      backgroundMusicRef.current.pause();
-    }
-  };
-
-  const playSuccessSound = () => {
-    if (isMuted) return;
-
-    const audio = new Audio(successSound);
-    audio.volume = 0.6;
-    audio.play().catch((error) => {
-      console.log('Success sound play prevented:', error);
-    });
-  };
-
-  const resumeBackgroundMusic = () => {
-    if (backgroundMusicRef?.current) {
-      backgroundMusicRef.current.play().catch((error) => {
-        console.log('Background music resume prevented:', error);
-      });
-    }
-  };
+  const { resumeBackgroundMusic } = useEndGameAudio({ soundFile: successSound });
 
   useEffect(() => {
-    stopBackgroundMusic();
-    playSuccessSound();
-  }, [backgroundMusicRef, isMuted]);
+    if (!score) {
+      navigate("/");
+      return;
+    }
+  }, [score, navigate]);
 
   useEffect(() => {
     if (score && !scoreSavedRef.current) {
