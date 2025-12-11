@@ -33,23 +33,6 @@ export interface TileState {
   revealed: boolean;
 }
 
-export interface FrontEnemy {
-  type: string;
-  name: string;
-  hp: number;
-  attack: number;
-  description: string;
-  icon: string;
-}
-
-export interface FrontObstacle {
-  type: string;
-  name: string;
-  requiredItem: string;
-  description: string;
-  icon: string;
-}
-
 export interface GameState {
   level: Level;
   player: Player;
