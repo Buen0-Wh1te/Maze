@@ -11,7 +11,7 @@ const TILE_CONFIG: Record<TileType, { style: string; label: string }> = {
   S: { style: "bg-green-600 border-green-700", label: "S" },
   E: { style: "bg-blue-600 border-blue-700", label: "E" },
   C: { style: "bg-gray-400 border-gray-500", label: "" },
-  W: { style: "bg-stone-800 border-stone-900", label: "" },
+  W: { style: "bg-black border-black", label: "" },
   M: { style: "bg-red-600 border-red-700", label: "M" },
   K: { style: "bg-yellow-500 border-yellow-600", label: "K" },
   D: { style: "bg-amber-700 border-amber-800", label: "D" },

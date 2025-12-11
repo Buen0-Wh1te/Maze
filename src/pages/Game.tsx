@@ -61,8 +61,10 @@ export function Game() {
   };
 
   const calculateScore = () => {
-    const tilesRevealed = tiles.flat().filter(tile => tile.revealed).length;
-    const timeElapsed = startTime ? Math.floor((Date.now() - startTime) / 1000) : 0;
+    const tilesRevealed = tiles.flat().filter((tile) => tile.revealed).length;
+    const timeElapsed = startTime
+      ? Math.floor((Date.now() - startTime) / 1000)
+      : 0;
 
     return {
       pseudo,
@@ -82,13 +84,17 @@ export function Game() {
 
     if (!isAdjacent) return;
 
-    if (tiles[row][col].type === "W") return;
-
-    setPlayerPos({ row, col });
-    setMoves(prev => prev + 1);
-
     const updated = [...tiles];
     updated[row][col].revealed = true;
+
+    if (tiles[row][col].type === "W") {
+      setTiles(updated);
+      return;
+    }
+
+    setPlayerPos({ row, col });
+    setMoves((prev) => prev + 1);
+
     setTiles(updated);
 
     if (updated[row][col].type === "E") {
@@ -110,7 +116,7 @@ export function Game() {
     );
   }
 
-  const tilesRevealed = tiles.flat().filter(tile => tile.revealed).length;
+  const tilesRevealed = tiles.flat().filter((tile) => tile.revealed).length;
 
   return (
     <div className="bg-slate-700 text-white flex flex-col items-center min-h-screen p-8 gap-4">
