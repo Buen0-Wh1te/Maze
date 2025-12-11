@@ -1,20 +1,17 @@
-import type { Position, Level, Enemy, Item } from './api';
+import type { Position, Level, Item } from "./api";
 
 export type TileType =
-  | 'S' // Start
-  | 'E' // End/Exit
-  | 'C' // Chemin (Path)
-  | 'W' // Wall
-  | 'M' // Monster
-  | 'K' // Key
-  | 'D' // Door
-  | 'A' // Weapon/Armor
-  | 'O'; // Obstacle
+  | "S" // Start
+  | "E" // End/Exit
+  | "C" // Chemin (Path)
+  | "W" // Wall
+  | "M" // Monster
+  | "K" // Key
+  | "D" // Door
+  | "A" // Weapon/Armor
+  | "O"; // Obstacle
 
-export type GameStatus =
-  | 'playing'
-  | 'victory'
-  | 'defeat';
+export type GameStatus = "playing" | "victory" | "defeat";
 
 export interface Player {
   position: Position;
@@ -34,7 +31,6 @@ export interface TileState {
   type: TileType;
   content: string; // API content
   revealed: boolean;
-  enemy: Enemy | null;
 }
 
 export interface GameState {
