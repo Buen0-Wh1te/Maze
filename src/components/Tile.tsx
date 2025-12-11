@@ -1,49 +1,63 @@
 import type { TileType } from "../types/game";
+import tilesetPath from "../assets/tileset/tileset_path.png";
+import tilesetWall from "../assets/tileset/tileset_wall.png";
+import { TILE_SIZE, TILE_GAP, TILE_BORDER } from "../constants/config";
 
 interface TileProps {
   type: TileType;
   revealed: boolean;
   isPlayer?: boolean;
   onClick?: () => void;
+  spriteX?: number;
+  spriteY?: number;
 }
 
-const TILE_CONFIG: Record<TileType, { style: string; label: string }> = {
-  S: { style: "bg-green-600 border-green-700", label: "S" },
-  E: { style: "bg-blue-600 border-blue-700", label: "E" },
-  C: { style: "bg-gray-400 border-gray-500", label: "" },
-  W: { style: "bg-black border-black", label: "" },
-  M: { style: "bg-red-600 border-red-700", label: "M" },
-  K: { style: "bg-yellow-500 border-yellow-600", label: "K" },
-  D: { style: "bg-amber-700 border-amber-800", label: "D" },
-  A: { style: "bg-purple-600 border-purple-700", label: "A" },
-  O: { style: "bg-orange-600 border-orange-700", label: "O" },
+const TILE_CONFIG: Record<TileType, { label: string; useSprite: boolean; fallbackColor: string }> = {
+  S: { label: "S", useSprite: false, fallbackColor: "bg-green-600" },
+  E: { label: "E", useSprite: false, fallbackColor: "bg-blue-600" },
+  C: { label: "", useSprite: true, fallbackColor: "bg-gray-400" }, // Path tiles use sprite
+  W: { label: "", useSprite: true, fallbackColor: "bg-stone-800" }, // Wall tiles use sprite
+  M: { label: "M", useSprite: false, fallbackColor: "bg-red-600" },
+  K: { label: "K", useSprite: false, fallbackColor: "bg-yellow-500" },
+  D: { label: "D", useSprite: false, fallbackColor: "bg-amber-700" },
+  A: { label: "A", useSprite: false, fallbackColor: "bg-purple-600" },
+  O: { label: "O", useSprite: false, fallbackColor: "bg-orange-600" },
 };
 
-const getTileConfig = (type: TileType, revealed: boolean) => {
-  if (!revealed) {
-    return { style: "bg-gray-800 border-gray-700", label: "" };
-  }
-  return (
-    TILE_CONFIG[type] || { style: "bg-gray-600 border-gray-700", label: "" }
-  );
-};
+export function Tile({ type, revealed, isPlayer = false, onClick, spriteX = 0, spriteY = 0 }: TileProps) {
+  const config = TILE_CONFIG[type] || { label: "", useSprite: false, fallbackColor: "bg-gray-600" };
+  const useSprite = config.useSprite && revealed;
 
-export function Tile({ type, revealed, isPlayer = false, onClick }: TileProps) {
-  const isAlwaysVisible = type === "E";
-  const visible = revealed || isAlwaysVisible;
-
-  const { style, label } = getTileConfig(type, visible);
+  const tileset = type === "W" ? tilesetWall : tilesetPath;
+  const backgroundPositionX = TILE_BORDER + spriteX * (TILE_SIZE + TILE_GAP);
+  const backgroundPositionY = TILE_BORDER + spriteY * (TILE_SIZE + TILE_GAP);
 
   return (
     <div
       onClick={onClick}
-      className={`w-12 h-12 border-2 flex items-center justify-center font-bold text-white cursor-pointer transition-colors hover:opacity-80 
-        ${style}
-        ${revealed ? "opacity-100" : "opacity-20"}
-        ${isPlayer ? "bg-blue-500" : ""}
-        `}
+      className={`absolute inset-0 flex items-center justify-center font-bold text-white cursor-pointer hover:brightness-110
+        ${revealed ? (useSprite ? "" : config.fallbackColor) : "bg-gray-800"}
+        ${isPlayer ? "ring-4 ring-blue-400 ring-inset" : ""}
+      `}
+      style={
+        useSprite
+          ? {
+              backgroundImage: `url(${tileset})`,
+              backgroundPosition: `-${backgroundPositionX}px -${backgroundPositionY}px`,
+              backgroundSize: "auto",
+              backgroundRepeat: "no-repeat",
+              imageRendering: "pixelated",
+              width: `${TILE_SIZE}px`,
+              height: `${TILE_SIZE}px`,
+            }
+          : {
+              width: `${TILE_SIZE}px`,
+              height: `${TILE_SIZE}px`,
+              fontSize: "20px",
+            }
+      }
     >
-      {isPlayer ? "P" : label}
+      {!useSprite && revealed && (isPlayer ? "P" : config.label)}
     </div>
   );
 }
