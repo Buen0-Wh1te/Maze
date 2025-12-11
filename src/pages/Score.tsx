@@ -2,7 +2,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useEffect, useRef } from "react";
 import { Button } from "../components/Button";
-import { useAudio } from "../hooks/useAudio";
+import { useEndGameAudio } from "../hooks/useEndGameAudio";
 import { saveScore } from "../utils/scores";
 import backgroundImage from "../assets/backgrounds/endgame.jpg";
 import gameoverSound from "../assets/sounds/gameover.mp3";
@@ -10,38 +10,16 @@ import gameoverSound from "../assets/sounds/gameover.mp3";
 export function Score() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { backgroundMusicRef, isMuted } = useAudio();
   const { score } = location.state || {};
   const scoreSavedRef = useRef(false);
-
-  const stopBackgroundMusic = () => {
-    if (backgroundMusicRef?.current) {
-      backgroundMusicRef.current.pause();
-    }
-  };
-
-  const playGameoverSound = () => {
-    if (isMuted) return;
-
-    const audio = new Audio(gameoverSound);
-    audio.volume = 0.6;
-    audio.play().catch((error) => {
-      console.log('Gameover sound play prevented:', error);
-    });
-  };
-
-  const resumeBackgroundMusic = () => {
-    if (backgroundMusicRef?.current) {
-      backgroundMusicRef.current.play().catch((error) => {
-        console.log('Background music resume prevented:', error);
-      });
-    }
-  };
+  const { resumeBackgroundMusic } = useEndGameAudio({ soundFile: gameoverSound });
 
   useEffect(() => {
-    stopBackgroundMusic();
-    playGameoverSound();
-  }, [backgroundMusicRef, isMuted]);
+    if (!score) {
+      navigate("/");
+      return;
+    }
+  }, [score, navigate]);
 
   useEffect(() => {
     if (score && !scoreSavedRef.current) {
