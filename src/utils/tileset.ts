@@ -166,10 +166,11 @@ function hammingDistance(a: number, b: number): number {
 async function findMatchingTile(targetBitmask: number, type: TileType): Promise<[number, number]> {
   const imageData = await loadBitmapData(type);
 
-  // Estimate bitmap grid size (assuming standard 47-tile layout)
-  // Try 16 tiles per row, 3 rows
-  const tilesPerRow = 16;
-  const numRows = 3;
+  // Bitmap is 397×133 pixels: 12×4 grid of 32px tiles with 1px gaps/border
+  // Formula: width = border + (tileSize + gap) * cols + border = 1 + 33*12 + 1 = 398
+  // Formula: height = border + (tileSize + gap) * rows + border = 1 + 33*4 + 1 = 134
+  const tilesPerRow = 12;
+  const numRows = 4;
 
   let closestMatch: [number, number] = [0, 0];
   let closestDistance = 8; // Max hamming distance for 8 bits
