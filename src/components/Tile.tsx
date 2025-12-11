@@ -4,6 +4,8 @@ interface TileProps {
   type: TileType;
   revealed: boolean;
   isPlayer?: boolean;
+  enemyIcon?: string;
+  obstacleIcon?: string;
   onClick?: () => void;
 }
 
@@ -28,11 +30,20 @@ const getTileConfig = (type: TileType, revealed: boolean) => {
   );
 };
 
-export function Tile({ type, revealed, isPlayer = false, onClick }: TileProps) {
+export function Tile({
+  type,
+  revealed,
+  isPlayer = false,
+  enemyIcon,
+  obstacleIcon,
+  onClick,
+}: TileProps) {
   const isAlwaysVisible = type === "E";
   const visible = revealed || isAlwaysVisible;
 
   const { style, label } = getTileConfig(type, visible);
+
+  const displayLabel = isPlayer ? "P" : enemyIcon || obstacleIcon || label;
 
   return (
     <div
@@ -43,7 +54,7 @@ export function Tile({ type, revealed, isPlayer = false, onClick }: TileProps) {
         ${isPlayer ? "bg-blue-500" : ""}
         `}
     >
-      {isPlayer ? "P" : label}
+      {displayLabel}
     </div>
   );
 }
