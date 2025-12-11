@@ -1,7 +1,10 @@
-/**
- * Tileset autotiling system using dynamic bitmap matching
- * Reads the actual bitmap image to find matching tile patterns
- */
+import {
+  TILE_SIZE,
+  TILE_GAP,
+  TILE_BORDER,
+  TILESET_CONFIG,
+  BITMASK_WEIGHTS,
+} from "../constants/config";
 
 export type TileType = "path" | "wall";
 
@@ -16,20 +19,13 @@ export interface Neighbors {
   bottomRight: boolean;
 }
 
-// Cached bitmap MASK data - the pattern reference (pink/white), not the decorative tileset
 let bitmapMaskCache: ImageData | null = null;
 
-/**
- * Load and cache bitmap MASK image data
- * This is the bitmap.png with pink (connected) and white (not connected) pixels
- * This is SEPARATE from the decorative tileset textures
- */
 async function loadBitmapMask(): Promise<ImageData> {
   if (bitmapMaskCache) {
     return bitmapMaskCache;
   }
 
-  // Use the actual bitmap mask image (the reference pattern, not the pretty textures)
   const bitmapPath = "/src/assets/bitmap/bitmap.png";
 
   return new Promise((resolve, reject) => {
@@ -53,54 +49,21 @@ async function loadBitmapMask(): Promise<ImageData> {
   });
 }
 
-/**
- * Check if a pixel is white (0) or colored (1)
- * White = RGB values are high (> 200)
- */
 function isPixelColored(imageData: ImageData, x: number, y: number): boolean {
   const index = (y * imageData.width + x) * 4;
   const r = imageData.data[index];
   const g = imageData.data[index + 1];
   const b = imageData.data[index + 2];
 
-  // If pixel is mostly white, return false (0)
-  // If pixel is colored (pink/red), return true (1)
   return r < 200 || g < 200 || b < 200;
 }
 
-/**
- * Read bitmask from a bitmap tile at position (tileX, tileY)
- *
- * Bitmap structure:
- * - 32x32 pixel tiles
- * - 1px gap between tiles
- * - 1px border around entire bitmap
- * - Position formula: border + (tileSize + gap) * index = 1 + 33 * index
- *
- * Checking order (clockwise from top-left):
- * 1. Top-Left pixel (bit 0)
- * 2. Top-Center pixel (bit 1)
- * 3. Top-Right pixel (bit 2)
- * 4. Center-Right pixel (bit 3)
- * 5. Bottom-Right pixel (bit 4)
- * 6. Bottom-Center pixel (bit 5)
- * 7. Bottom-Left pixel (bit 6)
- * 8. Center-Left pixel (bit 7)
- */
 function readBitmaskFromBitmap(imageData: ImageData, tileX: number, tileY: number): number {
-  const TILE_SIZE = 32;
-  const GAP = 1;
-  const BORDER = 1;
-
-  // Calculate top-left pixel of the tile
-  const startX = BORDER + tileX * (TILE_SIZE + GAP);
-  const startY = BORDER + tileY * (TILE_SIZE + GAP);
-
-  // Center of the tile
+  const startX = TILE_BORDER + tileX * (TILE_SIZE + TILE_GAP);
+  const startY = TILE_BORDER + tileY * (TILE_SIZE + TILE_GAP);
   const centerX = startX + TILE_SIZE / 2;
   const centerY = startY + TILE_SIZE / 2;
 
-  // Sample points (using edge pixels and corners)
   const topLeftPixel = isPixelColored(imageData, startX + 4, startY + 4);
   const topCenterPixel = isPixelColored(imageData, centerX, startY + 4);
   const topRightPixel = isPixelColored(imageData, startX + TILE_SIZE - 4, startY + 4);
@@ -110,7 +73,6 @@ function readBitmaskFromBitmap(imageData: ImageData, tileX: number, tileY: numbe
   const bottomLeftPixel = isPixelColored(imageData, startX + 4, startY + TILE_SIZE - 4);
   const centerLeftPixel = isPixelColored(imageData, startX + 4, centerY);
 
-  // Build bitmask
   let bitmask = 0;
   if (topLeftPixel) bitmask |= 1 << 0;
   if (topCenterPixel) bitmask |= 1 << 1;
@@ -124,13 +86,9 @@ function readBitmaskFromBitmap(imageData: ImageData, tileX: number, tileY: numbe
   return bitmask;
 }
 
-/**
- * Calculate the bitmask value for a tile based on its neighbors
- */
 export function calculateTileBitmask(neighbors: Neighbors): number {
   let bitmask = 0;
 
-  // Build bitmask in exact order of bitmap pixel checking (clockwise from top-left)
   if (neighbors.topLeft) bitmask |= 1 << 0;
   if (neighbors.top) bitmask |= 1 << 1;
   if (neighbors.topRight) bitmask |= 1 << 2;
@@ -143,57 +101,30 @@ export function calculateTileBitmask(neighbors: Neighbors): number {
   return bitmask;
 }
 
-/**
- * Calculate weighted hamming distance between two bitmasks
- * Cardinal directions (T, R, B, L) have much higher weight than diagonals
- *
- * Bit layout:
- * [bit0=TL][bit1=T][bit2=TR]
- * [bit7=L ]   X   [bit3=R ]
- * [bit6=BL][bit5=B][bit4=BR]
- *
- * Weights:
- * - Cardinal mismatch: 10 points each
- * - Diagonal mismatch: 1 point each
- */
 function weightedHammingDistance(a: number, b: number): number {
   const xor = a ^ b;
   let distance = 0;
 
-  // Cardinal bits (1, 3, 5, 7) - weight 10 each
-  if (xor & (1 << 1)) distance += 10; // Top
-  if (xor & (1 << 3)) distance += 10; // Right
-  if (xor & (1 << 5)) distance += 10; // Bottom
-  if (xor & (1 << 7)) distance += 10; // Left
+  if (xor & (1 << 1)) distance += BITMASK_WEIGHTS.CARDINAL;
+  if (xor & (1 << 3)) distance += BITMASK_WEIGHTS.CARDINAL;
+  if (xor & (1 << 5)) distance += BITMASK_WEIGHTS.CARDINAL;
+  if (xor & (1 << 7)) distance += BITMASK_WEIGHTS.CARDINAL;
 
-  // Diagonal bits (0, 2, 4, 6) - weight 1 each
-  if (xor & (1 << 0)) distance += 1; // Top-Left
-  if (xor & (1 << 2)) distance += 1; // Top-Right
-  if (xor & (1 << 4)) distance += 1; // Bottom-Right
-  if (xor & (1 << 6)) distance += 1; // Bottom-Left
+  if (xor & (1 << 0)) distance += BITMASK_WEIGHTS.DIAGONAL;
+  if (xor & (1 << 2)) distance += BITMASK_WEIGHTS.DIAGONAL;
+  if (xor & (1 << 4)) distance += BITMASK_WEIGHTS.DIAGONAL;
+  if (xor & (1 << 6)) distance += BITMASK_WEIGHTS.DIAGONAL;
 
   return distance;
 }
 
-/**
- * Find matching tile in bitmap by comparing bitmasks
- * If exact match not found, returns closest match
- */
 async function findMatchingTile(targetBitmask: number, type: TileType): Promise<[number, number]> {
   const imageData = await loadBitmapMask();
-
-  // Bitmap is 397×133 pixels: 12×4 grid of 32px tiles with 1px gaps/border
-  // Formula: width = border + (tileSize + gap) * cols + border = 1 + 33*12 + 1 = 398
-  // Formula: height = border + (tileSize + gap) * rows + border = 1 + 33*4 + 1 = 134
-  const tilesPerRow = 12;
-  const numRows = 4;
-
   let closestMatch: [number, number] = [0, 0];
-  let closestDistance = 44; // Max weighted distance: 4 cardinals * 10 + 4 diagonals * 1 = 44
+  let closestDistance = TILESET_CONFIG.MAX_WEIGHTED_DISTANCE;
 
-  // Search through bitmap tiles
-  for (let y = 0; y < numRows; y++) {
-    for (let x = 0; x < tilesPerRow; x++) {
+  for (let y = 0; y < TILESET_CONFIG.NUM_ROWS; y++) {
+    for (let x = 0; x < TILESET_CONFIG.TILES_PER_ROW; x++) {
       const tileBitmask = readBitmaskFromBitmap(imageData, x, y);
 
       if (tileBitmask === targetBitmask) {
@@ -211,19 +142,13 @@ async function findMatchingTile(targetBitmask: number, type: TileType): Promise<
   return closestMatch;
 }
 
-// Cache for bitmask to position mapping
 const tilePositionCache: { [key: string]: [number, number] } = {};
-
-// Callback to trigger re-render when cache updates
 let onCacheUpdate: (() => void) | null = null;
 
 export function setTilesetCacheUpdateCallback(callback: () => void) {
   onCacheUpdate = callback;
 }
 
-/**
- * Calculate sprite position based on tile type and neighbors
- */
 export function calculateTileSprite(
   type: TileType,
   neighbors: Neighbors
@@ -231,30 +156,22 @@ export function calculateTileSprite(
   const bitmask = calculateTileBitmask(neighbors);
   const cacheKey = `${type}_${bitmask}`;
 
-  // Return cached result if available
   if (tilePositionCache[cacheKey]) {
     const [x, y] = tilePositionCache[cacheKey];
     return { x, y, type };
   }
 
-  // Start async bitmap matching
   findMatchingTile(bitmask, type).then(([x, y]) => {
     tilePositionCache[cacheKey] = [x, y];
-    // Trigger re-render when cache updates
     if (onCacheUpdate) {
       onCacheUpdate();
     }
   });
 
-  // Temporary fallback using simple logic until bitmap loads
   return getTileSpriteSync(bitmask, type);
 }
 
-/**
- * Synchronous fallback for tile sprite calculation
- */
 function getTileSpriteSync(bitmask: number, type: TileType): { x: number; y: number; type: TileType } {
-  // Simple pattern matching based on cardinals only
   const hasTop = (bitmask & (1 << 1)) !== 0;
   const hasRight = (bitmask & (1 << 3)) !== 0;
   const hasBottom = (bitmask & (1 << 5)) !== 0;
@@ -262,45 +179,43 @@ function getTileSpriteSync(bitmask: number, type: TileType): { x: number; y: num
 
   let x = 0, y = 0;
 
-  // Basic patterns
   if (!hasTop && !hasRight && !hasBottom && !hasLeft) {
-    x = 0; y = 0; // Isolated
+    x = 0; y = 0;
   } else if (hasTop && !hasRight && !hasBottom && !hasLeft) {
-    x = 1; y = 0; // Top only
+    x = 1; y = 0;
   } else if (!hasTop && hasRight && !hasBottom && !hasLeft) {
-    x = 2; y = 0; // Right only
+    x = 2; y = 0;
   } else if (!hasTop && !hasRight && hasBottom && !hasLeft) {
-    x = 3; y = 0; // Bottom only
+    x = 3; y = 0;
   } else if (!hasTop && !hasRight && !hasBottom && hasLeft) {
-    x = 4; y = 0; // Left only
+    x = 4; y = 0;
   } else if (hasTop && !hasRight && hasBottom && !hasLeft) {
-    x = 5; y = 0; // Vertical
+    x = 5; y = 0;
   } else if (!hasTop && hasRight && !hasBottom && hasLeft) {
-    x = 6; y = 0; // Horizontal
+    x = 6; y = 0;
   } else if (hasTop && hasRight && !hasBottom && !hasLeft) {
-    x = 7; y = 0; // Top-Right L
+    x = 7; y = 0;
   } else if (!hasTop && hasRight && hasBottom && !hasLeft) {
-    x = 8; y = 0; // Right-Bottom L
+    x = 8; y = 0;
   } else if (!hasTop && !hasRight && hasBottom && hasLeft) {
-    x = 9; y = 0; // Bottom-Left L
+    x = 9; y = 0;
   } else if (hasTop && !hasRight && !hasBottom && hasLeft) {
-    x = 10; y = 0; // Left-Top L
+    x = 10; y = 0;
   } else if (hasTop && hasRight && hasBottom && !hasLeft) {
-    x = 11; y = 0; // T left
+    x = 11; y = 0;
   } else if (!hasTop && hasRight && hasBottom && hasLeft) {
-    x = 12; y = 0; // T up
+    x = 12; y = 0;
   } else if (hasTop && !hasRight && hasBottom && hasLeft) {
-    x = 13; y = 0; // T right
+    x = 13; y = 0;
   } else if (hasTop && hasRight && !hasBottom && hasLeft) {
-    x = 14; y = 0; // T down
+    x = 14; y = 0;
   } else if (hasTop && hasRight && hasBottom && hasLeft) {
-    x = 15; y = 0; // Cross
+    x = 15; y = 0;
   }
 
   return { x, y, type };
 }
 
-// Pre-load bitmap mask
 if (typeof window !== "undefined") {
   loadBitmapMask().catch(console.error);
 }

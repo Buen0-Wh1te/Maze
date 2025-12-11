@@ -1,6 +1,7 @@
 import type { TileType } from "../types/game";
 import tilesetPath from "../assets/tileset/tileset_path.png";
 import tilesetWall from "../assets/tileset/tileset_wall.png";
+import { TILE_SIZE, TILE_GAP, TILE_BORDER } from "../constants/config";
 
 interface TileProps {
   type: TileType;
@@ -10,11 +11,6 @@ interface TileProps {
   spriteX?: number;
   spriteY?: number;
 }
-
-// Tileset uses 32x32 tiles with 1px gaps between tiles and 1px overall border
-const TILE_SIZE = 32;
-const TILE_GAP = 1;
-const BORDER_SIZE = 1;
 
 const TILE_CONFIG: Record<TileType, { label: string; useSprite: boolean; fallbackColor: string }> = {
   S: { label: "S", useSprite: false, fallbackColor: "bg-green-600" },
@@ -32,13 +28,9 @@ export function Tile({ type, revealed, isPlayer = false, onClick, spriteX = 0, s
   const config = TILE_CONFIG[type] || { label: "", useSprite: false, fallbackColor: "bg-gray-600" };
   const useSprite = config.useSprite && revealed;
 
-  // Determine which tileset to use
   const tileset = type === "W" ? tilesetWall : tilesetPath;
-
-  // Calculate background position for sprite
-  // Formula: border + (tileSize + gap) * index
-  const backgroundPositionX = BORDER_SIZE + spriteX * (TILE_SIZE + TILE_GAP);
-  const backgroundPositionY = BORDER_SIZE + spriteY * (TILE_SIZE + TILE_GAP);
+  const backgroundPositionX = TILE_BORDER + spriteX * (TILE_SIZE + TILE_GAP);
+  const backgroundPositionY = TILE_BORDER + spriteY * (TILE_SIZE + TILE_GAP);
 
   return (
     <div
@@ -55,12 +47,12 @@ export function Tile({ type, revealed, isPlayer = false, onClick, spriteX = 0, s
               backgroundSize: "auto",
               backgroundRepeat: "no-repeat",
               imageRendering: "pixelated",
-              width: "32px",
-              height: "32px",
+              width: `${TILE_SIZE}px`,
+              height: `${TILE_SIZE}px`,
             }
           : {
-              width: "32px",
-              height: "32px",
+              width: `${TILE_SIZE}px`,
+              height: `${TILE_SIZE}px`,
               fontSize: "20px",
             }
       }
