@@ -4,6 +4,8 @@ import { fetchLevel } from "../services/api";
 import type { Level } from "../types/api";
 import type { TileState, TileType } from "../types/game";
 import { TILE_TYPES, SCORE_FACTORS } from "../constants/config";
+import { useInventory } from "./useInventory";
+import { useCombat } from "./useCombat";
 
 export function useGameState(levelId: number | undefined, pseudo: string) {
   const navigate = useNavigate();
@@ -14,6 +16,9 @@ export function useGameState(levelId: number | undefined, pseudo: string) {
   const [playerPos, setPlayerPos] = useState<{ row: number; col: number } | null>(null);
   const [moves, setMoves] = useState(0);
   const [startTime, setStartTime] = useState<number | null>(null);
+
+  const inventory = useInventory();
+  const combat = useCombat();
 
   useEffect(() => {
     if (levelId) {
@@ -129,5 +134,7 @@ export function useGameState(levelId: number | undefined, pseudo: string) {
     checkVictory,
     handleEndGame,
     retryLevel,
+    inventory,
+    combat,
   };
 }

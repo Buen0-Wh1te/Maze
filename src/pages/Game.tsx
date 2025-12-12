@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import { Button } from "../components/Button";
 import { Tile } from "../components/Tile";
 import { PlayerSprite } from "../components/PlayerSprite";
+import { Inventory } from "../components/Inventory";
+import { BattleModal } from "../components/BattleModal";
 import { useGame } from "../hooks/useGame";
 import { useGameState } from "../hooks/useGameState";
 import { useGridScaling } from "../hooks/useGridScaling";
@@ -16,6 +18,7 @@ import {
   calculateTileSprite,
   setTilesetCacheUpdateCallback,
 } from "../utils/tileset";
+import { handleTileInteraction } from "../utils/tileInteractions";
 import {
   TILE_SIZE,
   TILE_TYPES,
@@ -39,6 +42,8 @@ export function Game() {
     checkVictory,
     handleEndGame,
     retryLevel,
+    inventory,
+    combat,
   } = useGameState(levelId ? Number(levelId) : undefined, pseudo);
 
   const gridScale = useGridScaling(tiles);
@@ -58,7 +63,20 @@ export function Game() {
     if (!isAdjacentToPlayer(row, col, playerPos)) return;
 
     const updated = revealTile(row, col);
-    if (updated[row][col].type === TILE_TYPES.WALL) return;
+    const tile = updated[row][col];
+
+    const interaction = handleTileInteraction(
+      tile.type,
+      tile.content,
+      level,
+      inventory.hasKey,
+      inventory.addKey,
+      inventory.setWeapon,
+      inventory.addItem,
+      combat.startBattle
+    );
+
+    if (!interaction.canMove) return;
 
     const oldPos = { row: playerPos.row, col: playerPos.col };
     const newPos = { row, col };
@@ -177,7 +195,7 @@ export function Game() {
         </span>
         <button
           onClick={() => setDebugMode(!debugMode)}
-          className={`px-3 py-1 rounded text-xs font-bold transition-colors ${
+          className={`px-3 py-1 rounded text-xs font-bold transition-colors hidden ${
             debugMode
               ? "bg-red-600 hover:bg-red-700 text-white"
               : "bg-gray-700 hover:bg-gray-600 text-gray-300"
@@ -186,6 +204,7 @@ export function Game() {
           {debugMode ? "DEBUG: ON" : "DEBUG: OFF"}
         </button>
       </div>
+      <Inventory inventory={inventory.inventory} />
       <div className="flex-1 flex items-center justify-center w-full px-4">
         <div
           className="flex flex-col gap-0 shadow-2xl"
@@ -244,6 +263,22 @@ export function Game() {
         </div>
       </div>
       <Button onClick={handleEndGame}>End Game</Button>
+      {combat.isBattleActive && combat.currentEnemy && (
+        <BattleModal
+          enemy={combat.currentEnemy}
+          hasWeapon={inventory.hasWeapon()}
+          onFight={() => {
+            const result = combat.fight(inventory.hasWeapon());
+            combat.endBattle();
+            if (result === "defeat") {
+              handleEndGame();
+            }
+          }}
+          onFlee={() => {
+            combat.endBattle();
+          }}
+        />
+      )}
     </div>
   );
 }
