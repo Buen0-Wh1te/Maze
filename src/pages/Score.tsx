@@ -12,7 +12,9 @@ export function Score() {
   const location = useLocation();
   const { score } = location.state || {};
   const scoreSavedRef = useRef(false);
-  const { resumeBackgroundMusic } = useEndGameAudio({ soundFile: gameoverSound });
+  const { resumeBackgroundMusic } = useEndGameAudio({
+    soundFile: gameoverSound,
+  });
 
   useEffect(() => {
     if (!score) {
@@ -48,8 +50,10 @@ export function Score() {
         style={{
           backgroundColor: "rgba(0, 0, 0, 0.85)",
           backdropFilter: "blur(20px)",
-          maskImage: "linear-gradient(to bottom, transparent, black 5%, black 95%, transparent)",
-          WebkitMaskImage: "linear-gradient(to bottom, transparent, black 5%, black 95%, transparent)",
+          maskImage:
+            "linear-gradient(to bottom, transparent, black 5%, black 95%, transparent)",
+          WebkitMaskImage:
+            "linear-gradient(to bottom, transparent, black 5%, black 95%, transparent)",
         }}
         initial={{ opacity: 0, scale: 0.5 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -87,12 +91,8 @@ export function Score() {
         transition={{ delay: 2, duration: 0.5 }}
         className="flex gap-4 mt-8"
       >
-        <Button onClick={handlePlayAgain}>
-          Try Again
-        </Button>
-        <Button onClick={() => navigate("/highscores")}>
-          View Highscores
-        </Button>
+        <Button onClick={handlePlayAgain}>Try Again</Button>
+        <Button onClick={() => navigate("/highscores")}>View Highscores</Button>
       </motion.div>
     </div>
   );

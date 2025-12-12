@@ -2,9 +2,11 @@ import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Button } from "../components/Button";
 import { Tile } from "../components/Tile";
+import { PlayerSprite } from "../components/PlayerSprite";
 import { useGame } from "../hooks/useGame";
 import { useGameState } from "../hooks/useGameState";
 import { useGridScaling } from "../hooks/useGridScaling";
+import { usePlayerMovement } from "../hooks/usePlayerMovement";
 import {
   isAdjacentToRevealed,
   isAdjacentToPlayer,
@@ -47,9 +49,11 @@ export function Game() {
     weapon: null,
     items: [],
   });
-
+    
   const gridScale = useGridScaling(tiles);
   const [, forceUpdate] = useState({});
+  const playerMovement = usePlayerMovement();
+  const [debugMode, setDebugMode] = useState(false);
 
   useEffect(() => {
     setTilesetCacheUpdateCallback(() => {
@@ -74,8 +78,9 @@ export function Game() {
 
     if (updated[row][col].type === TILE_TYPES.WALL) return;
 
+    const oldPos = { row: playerPos.row, col: playerPos.col };
+    const newPos = { row, col };
     const target: TileState = tiles[row][col];
-
     if (target.itemId) {
       const item = itemsCatalog.find((i) => i.id === Number(target.itemId));
       if (item) {
@@ -87,8 +92,49 @@ export function Game() {
     }
 
     movePlayer(row, col);
+    playerMovement.startMovement(oldPos, newPos);
+
     await checkVictory(row, col);
   };
+
+  useEffect(() => {
+    const movePlayer = (row: number, col: number) => {
+      handleTileClick(row, col);
+    };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!playerPos) return;
+
+      let targetRow = playerPos.row;
+      let targetCol = playerPos.col;
+
+      switch (e.key) {
+        case "ArrowUp":
+          targetRow -= 1;
+          break;
+        case "ArrowDown":
+          targetRow += 1;
+          break;
+        case "ArrowLeft":
+          targetCol -= 1;
+          break;
+        case "ArrowRight":
+          targetCol += 1;
+          break;
+        default:
+          return;
+      }
+
+      if (targetRow < 0 || targetRow >= tiles.length || targetCol < 0 || targetCol >= tiles[0].length) {
+        return;
+      }
+
+      movePlayer(targetRow, targetCol);
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  });
+>>>>>>> 205a3bd24195d0fb695a2de6167224e1f206bdb1
 
   if (loading) {
     return (
@@ -158,6 +204,16 @@ export function Game() {
           Tiles Revealed:{" "}
           <span className="text-white font-bold">{tilesRevealed}</span>
         </span>
+        <button
+          onClick={() => setDebugMode(!debugMode)}
+          className={`px-3 py-1 rounded text-xs font-bold transition-colors ${
+            debugMode
+              ? "bg-red-600 hover:bg-red-700 text-white"
+              : "bg-gray-700 hover:bg-gray-600 text-gray-300"
+          }`}
+        >
+          {debugMode ? "DEBUG: ON" : "DEBUG: OFF"}
+        </button>
       </div>
       <div className="flex-1 flex items-center justify-center w-full px-4">
         <div
@@ -181,6 +237,7 @@ export function Game() {
                 const tileType =
                   tile.type === TILE_TYPES.WALL ? "wall" : "path";
                 const sprite = calculateTileSprite(tileType, neighbors);
+                const isPlayerTile = playerPos?.row === rowIndex && playerPos?.col === colIndex;
 
                 return (
                   <div
@@ -194,14 +251,20 @@ export function Game() {
                     <Tile
                       type={tile.type}
                       revealed={tile.revealed}
-                      isPlayer={
-                        playerPos?.row === rowIndex &&
-                        playerPos?.col === colIndex
-                      }
+                      isPlayer={isPlayerTile}
                       onClick={() => handleTileClick(rowIndex, colIndex)}
                       spriteX={sprite.x}
                       spriteY={sprite.y}
+                      debugMode={debugMode}
                     />
+                    {isPlayerTile && (
+                      <PlayerSprite
+                        isMoving={playerMovement.isMoving}
+                        direction={playerMovement.direction}
+                        size={TILE_SIZE}
+                        transitionOffset={playerMovement.transitionOffset}
+                      />
+                    )}
                   </div>
                 );
               })}

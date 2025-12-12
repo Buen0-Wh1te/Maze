@@ -56,6 +56,17 @@ export const BITMASK_WEIGHTS = {
   CARDINAL: 10,
   DIAGONAL: 1,
 } as const;
+<<<<<<< HEAD
+=======
+
+export const PLAYER_SPRITE_CONFIG = {
+  SIZE_MULTIPLIER: 1.2,
+  MOVEMENT_DURATION_MS: 600,
+  FRAME_DELAY_RUNNING_MS: 100,
+  FRAME_DELAY_IDLE_MS: 150,
+} as const;
+
+>>>>>>> 205a3bd24195d0fb695a2de6167224e1f206bdb1
 export const GRADIENT_GOLD = "linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FFD700 100%)";
 export const MASK_GRADIENT = "linear-gradient(to bottom, transparent, black 5%, black 95%, transparent)";
 

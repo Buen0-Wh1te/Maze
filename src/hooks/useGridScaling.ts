@@ -16,7 +16,14 @@ export function useGridScaling(tiles: any[][]) {
         const scaleY = maxHeight / gridHeight;
         const scale = Math.min(scaleX, scaleY, GAME_LAYOUT.MAX_SCALE);
 
+<<<<<<< HEAD
         setGridScale(scale);
+=======
+        const deviceRatio = window.devicePixelRatio || 1;
+        const snappedScale = Math.floor(scale * deviceRatio) / deviceRatio;
+
+        setGridScale(snappedScale);
+>>>>>>> 205a3bd24195d0fb695a2de6167224e1f206bdb1
       };
 
       calculateScale();
