@@ -58,6 +58,35 @@ function isPixelColored(imageData: ImageData, x: number, y: number): boolean {
   return r < 200 || g < 200 || b < 200;
 }
 
+/**
+ * Checks if a tile in the bitmap has any sprite data
+ * This prevents selecting empty tiles that don't contain any meaningful graphics
+ * @param imageData The bitmap image data
+ * @param tileX The tile's X coordinate in the tileset grid
+ * @param tileY The tile's Y coordinate in the tileset grid
+ * @returns true if the tile is empty (no colored pixels), false otherwise
+ */
+function isTileEmpty(imageData: ImageData, tileX: number, tileY: number): boolean {
+  const startX = TILE_BORDER + tileX * (TILE_SIZE + TILE_GAP);
+  const startY = TILE_BORDER + tileY * (TILE_SIZE + TILE_GAP);
+
+  const samplePoints = [
+    [startX + TILE_SIZE / 2, startY + TILE_SIZE / 2],
+    [startX + TILE_SIZE / 4, startY + TILE_SIZE / 4],
+    [startX + (3 * TILE_SIZE) / 4, startY + TILE_SIZE / 4],
+    [startX + TILE_SIZE / 4, startY + (3 * TILE_SIZE) / 4],
+    [startX + (3 * TILE_SIZE) / 4, startY + (3 * TILE_SIZE) / 4],
+  ];
+
+  for (const [x, y] of samplePoints) {
+    if (isPixelColored(imageData, Math.floor(x), Math.floor(y))) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 function readBitmaskFromBitmap(imageData: ImageData, tileX: number, tileY: number): number {
   const startX = TILE_BORDER + tileX * (TILE_SIZE + TILE_GAP);
   const startY = TILE_BORDER + tileY * (TILE_SIZE + TILE_GAP);
@@ -118,13 +147,18 @@ function weightedHammingDistance(a: number, b: number): number {
   return distance;
 }
 
-async function findMatchingTile(targetBitmask: number, type: TileType): Promise<[number, number]> {
+async function findMatchingTile(targetBitmask: number): Promise<[number, number]> {
   const imageData = await loadBitmapMask();
   let closestMatch: [number, number] = [0, 0];
-  let closestDistance = TILESET_CONFIG.MAX_WEIGHTED_DISTANCE;
+  let closestDistance: number = TILESET_CONFIG.MAX_WEIGHTED_DISTANCE;
 
   for (let y = 0; y < TILESET_CONFIG.NUM_ROWS; y++) {
     for (let x = 0; x < TILESET_CONFIG.TILES_PER_ROW; x++) {
+      // Skip tiles that don't contain any sprite data (issue #67)
+      if (isTileEmpty(imageData, x, y)) {
+        continue;
+      }
+
       const tileBitmask = readBitmaskFromBitmap(imageData, x, y);
 
       if (tileBitmask === targetBitmask) {
@@ -161,7 +195,7 @@ export function calculateTileSprite(
     return { x, y, type };
   }
 
-  findMatchingTile(bitmask, type).then(([x, y]) => {
+  findMatchingTile(bitmask).then(([x, y]) => {
     tilePositionCache[cacheKey] = [x, y];
     if (onCacheUpdate) {
       onCacheUpdate();
