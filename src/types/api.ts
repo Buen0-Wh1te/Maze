@@ -22,25 +22,29 @@ export interface Position {
 }
 
 export interface Enemy {
-  id: number;
+  type: string;
   name: string;
   hp: number;
   attack: number;
-  defense: number;
+  description: string;
+  icon?: string;
 }
 
 export interface Obstacle {
-  id: number;
-  name: string;
   type: string;
-  effect: string;
+  name: string;
+  requiredItem: string;
+  description: string;
+  icon?: string;
 }
 
 export interface Item {
-  id: number;
+  id: string;
+  kind: "key" | "item";
+  color?: string;
   name: string;
-  type: string;
-  effect: string;
+  description: string;
+  icon?: string;
 }
 
 export interface Highscore {

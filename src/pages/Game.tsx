@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import { Button } from "../components/Button";
 import { Tile } from "../components/Tile";
 import { PlayerSprite } from "../components/PlayerSprite";
+import { Inventory } from "../components/Inventory";
+import { BattleModal } from "../components/BattleModal";
 import { useGame } from "../hooks/useGame";
 import { useGameState } from "../hooks/useGameState";
 import { useGridScaling } from "../hooks/useGridScaling";
@@ -16,6 +18,7 @@ import {
   calculateTileSprite,
   setTilesetCacheUpdateCallback,
 } from "../utils/tileset";
+import { handleTileInteraction } from "../utils/tileInteractions";
 import {
   TILE_SIZE,
   TILE_TYPES,
@@ -35,16 +38,20 @@ export function Game() {
     playerPos,
     moves,
     revealTile,
+    clearTile,
     movePlayer,
     checkVictory,
     handleEndGame,
     retryLevel,
+    inventory,
+    combat,
   } = useGameState(levelId ? Number(levelId) : undefined, pseudo);
 
   const gridScale = useGridScaling(tiles);
   const [, forceUpdate] = useState({});
   const playerMovement = usePlayerMovement();
   const [debugMode, setDebugMode] = useState(false);
+  const [monsterTilePos, setMonsterTilePos] = useState<{ row: number; col: number } | null>(null);
 
   useEffect(() => {
     setTilesetCacheUpdateCallback(() => {
@@ -58,7 +65,29 @@ export function Game() {
     if (!isAdjacentToPlayer(row, col, playerPos)) return;
 
     const updated = revealTile(row, col);
-    if (updated[row][col].type === TILE_TYPES.WALL) return;
+    const tile = updated[row][col];
+
+    const interaction = handleTileInteraction(
+      tile.type,
+      tile.content,
+      level,
+      inventory.hasKey,
+      inventory.addKey,
+      inventory.setWeapon,
+      inventory.addItem,
+      combat.startBattle
+    );
+
+    if (!interaction.canMove) {
+      if (interaction.shouldShowBattle) {
+        setMonsterTilePos({ row, col });
+      }
+      return;
+    }
+
+    if (interaction.shouldClearTile) {
+      clearTile(row, col);
+    }
 
     const oldPos = { row: playerPos.row, col: playerPos.col };
     const newPos = { row, col };
@@ -186,6 +215,7 @@ export function Game() {
           {debugMode ? "DEBUG: ON" : "DEBUG: OFF"}
         </button>
       </div>
+      <Inventory inventory={inventory.inventory} />
       <div className="flex-1 flex items-center justify-center w-full px-4">
         <div
           className="flex flex-col gap-0 shadow-2xl"
@@ -244,6 +274,31 @@ export function Game() {
         </div>
       </div>
       <Button onClick={handleEndGame}>End Game</Button>
+      {combat.isBattleActive && combat.currentEnemy && monsterTilePos && (
+        <BattleModal
+          enemy={combat.currentEnemy}
+          hasWeapon={inventory.hasWeapon()}
+          onFight={() => {
+            const result = combat.fight(inventory.hasWeapon());
+            combat.endBattle();
+            if (result === "victory") {
+              clearTile(monsterTilePos.row, monsterTilePos.col);
+              movePlayer(monsterTilePos.row, monsterTilePos.col);
+              const oldPos = playerPos || { row: 0, col: 0 };
+              playerMovement.startMovement(oldPos, monsterTilePos);
+              setMonsterTilePos(null);
+              checkVictory(monsterTilePos.row, monsterTilePos.col);
+            } else if (result === "defeat") {
+              setMonsterTilePos(null);
+              handleEndGame();
+            }
+          }}
+          onFlee={() => {
+            combat.endBattle();
+            setMonsterTilePos(null);
+          }}
+        />
+      )}
     </div>
   );
 }

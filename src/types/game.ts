@@ -1,4 +1,6 @@
-import type { Position, Level, Item } from "./api";
+import type { Position, Level, Item, Enemy } from "./api";
+
+export type { Enemy, Item };
 
 export type TileType =
   | "S" // Start
