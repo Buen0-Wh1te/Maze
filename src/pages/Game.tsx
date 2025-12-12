@@ -51,6 +51,7 @@ export function Game() {
   const [, forceUpdate] = useState({});
   const playerMovement = usePlayerMovement();
   const [debugMode, setDebugMode] = useState(false);
+  const [monsterTilePos, setMonsterTilePos] = useState<{ row: number; col: number } | null>(null);
 
   useEffect(() => {
     setTilesetCacheUpdateCallback(() => {
@@ -77,7 +78,12 @@ export function Game() {
       combat.startBattle
     );
 
-    if (!interaction.canMove) return;
+    if (!interaction.canMove) {
+      if (interaction.shouldShowBattle) {
+        setMonsterTilePos({ row, col });
+      }
+      return;
+    }
 
     if (interaction.shouldClearTile) {
       clearTile(row, col);
@@ -268,19 +274,28 @@ export function Game() {
         </div>
       </div>
       <Button onClick={handleEndGame}>End Game</Button>
-      {combat.isBattleActive && combat.currentEnemy && (
+      {combat.isBattleActive && combat.currentEnemy && monsterTilePos && (
         <BattleModal
           enemy={combat.currentEnemy}
           hasWeapon={inventory.hasWeapon()}
           onFight={() => {
             const result = combat.fight(inventory.hasWeapon());
             combat.endBattle();
-            if (result === "defeat") {
+            if (result === "victory") {
+              clearTile(monsterTilePos.row, monsterTilePos.col);
+              movePlayer(monsterTilePos.row, monsterTilePos.col);
+              const oldPos = playerPos || { row: 0, col: 0 };
+              playerMovement.startMovement(oldPos, monsterTilePos);
+              setMonsterTilePos(null);
+              checkVictory(monsterTilePos.row, monsterTilePos.col);
+            } else if (result === "defeat") {
+              setMonsterTilePos(null);
               handleEndGame();
             }
           }}
           onFlee={() => {
             combat.endBattle();
+            setMonsterTilePos(null);
           }}
         />
       )}
