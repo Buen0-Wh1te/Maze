@@ -44,6 +44,9 @@ export function PlayerSprite({
   // Calculate sprite sheet position (only use first row)
   const frameX = currentFrame * SPRITE_CONFIG.frameSize;
 
+  // Make sprite 1.5x larger than tile
+  const spriteSize = size * 1.5;
+
   return (
     <div
       className="absolute inset-0 flex items-center justify-center pointer-events-none z-10"
@@ -53,11 +56,11 @@ export function PlayerSprite({
     >
       <div
         style={{
-          width: `${size}px`,
-          height: `${size}px`,
+          width: `${spriteSize}px`,
+          height: `${spriteSize}px`,
           backgroundImage: `url(${animation.src})`,
-          backgroundPosition: `-${frameX * (size / SPRITE_CONFIG.frameSize)}px 0px`,
-          backgroundSize: `${animation.frames * size}px ${size}px`,
+          backgroundPosition: `-${frameX * (spriteSize / SPRITE_CONFIG.frameSize)}px 0px`,
+          backgroundSize: `${animation.frames * spriteSize}px ${spriteSize}px`,
           imageRendering: 'pixelated',
           transform: isFlipped ? 'scaleX(-1)' : 'none',
         }}
