@@ -61,6 +61,40 @@ export function Game() {
     await checkVictory(row, col);
   };
 
+  useEffect(() => {
+    const movePlayer = (row: number, col: number) => {
+      handleTileClick(row, col);
+    };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!playerPos) return;
+
+      let targetRow = playerPos.row;
+      let targetCol = playerPos.col;
+
+      switch (e.key) {
+        case "ArrowUp":
+          targetRow -= 1;
+          break;
+        case "ArrowDown":
+          targetRow += 1;
+          break;
+        case "ArrowLeft":
+          targetCol -= 1;
+          break;
+        case "ArrowRight":
+          targetCol += 1;
+          break;
+        default:
+          return;
+      }
+
+      movePlayer(targetRow, targetCol);
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  });
+
   if (loading) {
     return (
       <div
