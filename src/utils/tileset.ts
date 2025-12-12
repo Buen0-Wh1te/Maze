@@ -172,6 +172,16 @@ export function calculateTileSprite(
 }
 
 function getTileSpriteSync(bitmask: number, type: TileType): { x: number; y: number; type: TileType } {
+  // Hardcoded special cases
+  if (bitmask === 255) {
+    // All 8 neighbors are the same type - fully surrounded
+    return { x: 9, y: 2, type };
+  }
+  if (bitmask === 0) {
+    // All neighbors are different - isolated
+    return { x: 0, y: 3, type };
+  }
+
   const hasTop = (bitmask & (1 << 1)) !== 0;
   const hasRight = (bitmask & (1 << 3)) !== 0;
   const hasBottom = (bitmask & (1 << 5)) !== 0;
