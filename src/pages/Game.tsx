@@ -96,6 +96,10 @@ export function Game() {
           return;
       }
 
+      if (targetRow < 0 || targetRow >= tiles.length || targetCol < 0 || targetCol >= tiles[0].length) {
+        return;
+      }
+
       movePlayer(targetRow, targetCol);
     };
 
