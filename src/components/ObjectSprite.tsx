@@ -11,7 +11,7 @@ interface ObjectSpriteProps {
 
 const KEY_SPRITES = [KeyFrame1, KeyFrame2, KeyFrame4, KeyFrame3, KeyFrame4, KeyFrame2];
 const ANIMATION_LOOP = [0, 1, 2, 3, 4, 5]; // Maps to: 1-2-4-3-4-2
-const FRAME_DELAY_MS = 150;
+const FRAME_DELAY_MS = 300;
 
 function useObjectAnimation(frameCount: number, frameDelay: number) {
   const [currentFrame, setCurrentFrame] = useState(0);
