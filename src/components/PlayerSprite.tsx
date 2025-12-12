@@ -55,7 +55,7 @@ export function PlayerSprite({
       style={{
         imageRendering: 'pixelated',
         transform: `translate(${transitionOffset.x}px, ${transitionOffset.y}px)`,
-        transition: isMoving ? 'transform 300ms linear' : 'none',
+        transition: isMoving ? 'transform 600ms linear' : 'none',
       }}
     >
       <div

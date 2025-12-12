@@ -72,7 +72,7 @@ export function Game() {
     setTimeout(() => {
       setIsPlayerMoving(false);
       setPreviousPos(null);
-    }, 300);
+    }, 600);
 
     await checkVictory(row, col);
   };
