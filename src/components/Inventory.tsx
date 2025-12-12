@@ -30,7 +30,7 @@ export function Inventory({ inventory }: InventoryProps) {
           {slots.map((slot, idx) => (
             <div
               key={idx}
-              className="relative bg-gray-900 border-2 border-gray-700 overflow-hidden"
+              className="relative bg-gray-900 border-2 border-gray-700 overflow-hidden p-1"
               style={{
                 width: `${SLOT_SIZE}px`,
                 height: `${SLOT_SIZE}px`,
@@ -38,7 +38,7 @@ export function Inventory({ inventory }: InventoryProps) {
               }}
             >
               {slot.data && (
-                <div className="absolute inset-0 flex items-center justify-center">
+                <div className="absolute inset-1 flex items-center justify-center">
                   {slot.type === "key" && (
                     <div className="relative w-full h-full flex items-center justify-center">
                       <div
@@ -61,14 +61,14 @@ export function Inventory({ inventory }: InventoryProps) {
                     </div>
                   )}
                   {slot.type === "weapon" && (
-                    <div className="flex items-center justify-center w-full h-full p-2">
+                    <div className="flex items-center justify-center w-full h-full">
                       <span className="text-white text-xs text-center uppercase">
                         {slot.data.name}
                       </span>
                     </div>
                   )}
                   {slot.type === "item" && (
-                    <div className="flex items-center justify-center w-full h-full p-2">
+                    <div className="flex items-center justify-center w-full h-full">
                       <span className="text-white text-xs text-center uppercase">
                         {slot.data.name}
                       </span>
