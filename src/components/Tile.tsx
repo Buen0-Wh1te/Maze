@@ -10,6 +10,7 @@ interface TileProps {
   onClick?: () => void;
   spriteX?: number;
   spriteY?: number;
+  debugMode?: boolean;
 }
 
 const TILE_CONFIG: Record<
@@ -34,13 +35,15 @@ export function Tile({
   onClick,
   spriteX = 0,
   spriteY = 0,
+  debugMode = false,
 }: TileProps) {
   const config = TILE_CONFIG[type] || {
     label: "",
     useSprite: false,
     fallbackColor: "bg-gray-600",
   };
-  const useSprite = config.useSprite && revealed;
+  const effectiveRevealed = debugMode || revealed;
+  const useSprite = config.useSprite && effectiveRevealed;
 
   const tileset = type === "W" ? tilesetWall : tilesetPath;
   const backgroundPositionX = TILE_BORDER + spriteX * (TILE_SIZE + TILE_GAP);
@@ -50,7 +53,7 @@ export function Tile({
     <div
       onClick={onClick}
       className={`absolute inset-0 flex items-center justify-center font-bold text-white cursor-pointer hover:brightness-110
-        ${revealed ? (useSprite ? "" : config.fallbackColor) : "bg-gray-800"}
+        ${effectiveRevealed ? (useSprite ? "" : config.fallbackColor) : "bg-gray-800"}
         ${isPlayer ? "ring-4 ring-blue-400 ring-inset" : ""}
       `}
       style={
@@ -71,7 +74,17 @@ export function Tile({
             }
       }
     >
-      {!useSprite && revealed && (isPlayer ? "P" : config.label)}
+      {debugMode && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span
+            className="text-white font-bold text-xs bg-black/70 px-1 rounded pointer-events-none"
+            style={{ fontSize: "10px", textShadow: "0 0 2px black" }}
+          >
+            {type}
+          </span>
+        </div>
+      )}
+      {!useSprite && effectiveRevealed && (isPlayer ? "P" : config.label)}
     </div>
   );
 }
