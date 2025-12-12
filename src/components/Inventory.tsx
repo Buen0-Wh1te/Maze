@@ -62,14 +62,14 @@ export function Inventory({ inventory }: InventoryProps) {
                   )}
                   {slot.type === "weapon" && (
                     <div className="flex items-center justify-center w-full h-full">
-                      <span className="text-white text-xs text-center uppercase">
+                      <span className="text-white text-center uppercase" style={{ fontSize: "0.625rem" }}>
                         {slot.data.name}
                       </span>
                     </div>
                   )}
                   {slot.type === "item" && (
                     <div className="flex items-center justify-center w-full h-full">
-                      <span className="text-white text-xs text-center uppercase">
+                      <span className="text-white text-center uppercase" style={{ fontSize: "0.625rem" }}>
                         {slot.data.name}
                       </span>
                     </div>
