@@ -34,8 +34,7 @@ export function Game() {
   const [, forceUpdate] = useState({});
   const [playerDirection, setPlayerDirection] = useState<Direction>('right');
   const [isPlayerMoving, setIsPlayerMoving] = useState(false);
-  const [previousPos, setPreviousPos] = useState<{ row: number; col: number } | null>(null);
-  const [animationKey, setAnimationKey] = useState(0);
+  const [transitionOffset, setTransitionOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 
   useEffect(() => {
     setTilesetCacheUpdateCallback(() => {
@@ -57,28 +56,31 @@ export function Game() {
 
     if (updated[row][col].type === TILE_TYPES.WALL) return;
 
-    // Store previous position for transition
-    setPreviousPos({ row: playerPos.row, col: playerPos.col });
-
-    // Update direction and trigger movement animation (only for horizontal movement)
+    // Update direction (only for horizontal movement)
     if (col !== playerPos.col) {
       const direction = getDirection(playerPos.col, col);
       setPlayerDirection(direction);
     }
 
+    // Calculate offset from old position to new position
+    const offsetX = (playerPos.col - col) * TILE_SIZE;
+    const offsetY = (playerPos.row - row) * TILE_SIZE;
+
     // Move player position immediately
     movePlayer(row, col);
 
-    // Trigger animation on next frame
+    // Set initial offset (sprite starts at old position)
+    setTransitionOffset({ x: offsetX, y: offsetY });
+    setIsPlayerMoving(true);
+
+    // Animate to new position on next frame
     requestAnimationFrame(() => {
-      setIsPlayerMoving(true);
-      setAnimationKey(prev => prev + 1);
+      setTransitionOffset({ x: 0, y: 0 });
     });
 
     // Reset movement state after animation
     setTimeout(() => {
       setIsPlayerMoving(false);
-      setPreviousPos(null);
     }, 600);
 
     await checkVictory(row, col);
@@ -171,16 +173,6 @@ export function Game() {
                 const sprite = calculateTileSprite(tileType, neighbors);
                 const isPlayerTile = playerPos?.row === rowIndex && playerPos?.col === colIndex;
 
-                // Calculate transition offset - sprite starts at old position, moves to new position
-                let transitionOffset = { x: 0, y: 0 };
-                if (isPlayerTile && previousPos && isPlayerMoving) {
-                  // Offset from old position to current position
-                  transitionOffset = {
-                    x: (previousPos.col - colIndex) * TILE_SIZE,
-                    y: (previousPos.row - rowIndex) * TILE_SIZE,
-                  };
-                }
-
                 return (
                   <div
                     key={`${rowIndex}-${colIndex}`}
@@ -197,7 +189,6 @@ export function Game() {
                     />
                     {isPlayerTile && (
                       <PlayerSprite
-                        key={animationKey}
                         isMoving={isPlayerMoving}
                         direction={playerDirection}
                         size={TILE_SIZE}
