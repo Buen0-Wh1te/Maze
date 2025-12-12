@@ -177,7 +177,7 @@ export function Game() {
         </span>
         <button
           onClick={() => setDebugMode(!debugMode)}
-          className={`px-3 py-1 rounded text-xs font-bold transition-colors ${
+          className={`hidden px-3 py-1 rounded text-xs font-bold transition-colors ${
             debugMode
               ? "bg-red-600 hover:bg-red-700 text-white"
               : "bg-gray-700 hover:bg-gray-600 text-gray-300"

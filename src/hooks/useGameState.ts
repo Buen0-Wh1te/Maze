@@ -65,15 +65,20 @@ export function useGameState(levelId: number | undefined, pseudo: string) {
       ? Math.floor((Date.now() - startTime) / 1000)
       : 0;
 
+    const rawScore =
+      SCORE_FACTORS.BASE_SCORE -
+      tilesRevealed * SCORE_FACTORS.TILE_PENALTY -
+      moves * SCORE_FACTORS.MOVE_PENALTY -
+      timeElapsed * SCORE_FACTORS.TIME_BONUS_PER_SECOND;
+
+    const totalScore = Math.max(rawScore, SCORE_FACTORS.MIN_SCORE);
+
     return {
       pseudo,
       tilesRevealed,
       moves,
       timeElapsed,
-      totalScore:
-        tilesRevealed * SCORE_FACTORS.TILES_REVEALED_MULTIPLIER -
-        moves * SCORE_FACTORS.MOVES_PENALTY -
-        timeElapsed * SCORE_FACTORS.TIME_PENALTY,
+      totalScore,
     };
   };
 
