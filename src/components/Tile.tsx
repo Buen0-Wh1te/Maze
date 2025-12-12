@@ -13,7 +13,10 @@ interface TileProps {
   debugMode?: boolean;
 }
 
-const TILE_CONFIG: Record<TileType, { label: string; useSprite: boolean; fallbackColor: string }> = {
+const TILE_CONFIG: Record<
+  TileType,
+  { label: string; useSprite: boolean; fallbackColor: string }
+> = {
   S: { label: "S", useSprite: false, fallbackColor: "bg-green-600" },
   E: { label: "E", useSprite: false, fallbackColor: "bg-blue-600" },
   C: { label: "", useSprite: true, fallbackColor: "bg-gray-400" }, // Path tiles use sprite
@@ -25,8 +28,20 @@ const TILE_CONFIG: Record<TileType, { label: string; useSprite: boolean; fallbac
   O: { label: "O", useSprite: false, fallbackColor: "bg-orange-600" },
 };
 
-export function Tile({ type, revealed, isPlayer = false, onClick, spriteX = 0, spriteY = 0, debugMode = false }: TileProps) {
-  const config = TILE_CONFIG[type] || { label: "", useSprite: false, fallbackColor: "bg-gray-600" };
+export function Tile({
+  type,
+  revealed,
+  isPlayer = false,
+  onClick,
+  spriteX = 0,
+  spriteY = 0,
+  debugMode = false,
+}: TileProps) {
+  const config = TILE_CONFIG[type] || {
+    label: "",
+    useSprite: false,
+    fallbackColor: "bg-gray-600",
+  };
   const effectiveRevealed = debugMode || revealed;
   const useSprite = config.useSprite && effectiveRevealed;
 
