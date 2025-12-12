@@ -2,7 +2,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useEffect, useRef } from "react";
 import { Button } from "../components/Button";
-import { useAudio } from "../hooks/useAudio";
+import { useEndGameAudio } from "../hooks/useEndGameAudio";
 import { saveScore } from "../utils/scores";
 import backgroundImage from "../assets/backgrounds/victoryscreen.jpg";
 import successSound from "../assets/sounds/success.mp3";
@@ -10,38 +10,18 @@ import successSound from "../assets/sounds/success.mp3";
 export function Victory() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { backgroundMusicRef, isMuted } = useAudio();
   const { score } = location.state || {};
   const scoreSavedRef = useRef(false);
-
-  const stopBackgroundMusic = () => {
-    if (backgroundMusicRef?.current) {
-      backgroundMusicRef.current.pause();
-    }
-  };
-
-  const playSuccessSound = () => {
-    if (isMuted) return;
-
-    const audio = new Audio(successSound);
-    audio.volume = 0.6;
-    audio.play().catch((error) => {
-      console.log('Success sound play prevented:', error);
-    });
-  };
-
-  const resumeBackgroundMusic = () => {
-    if (backgroundMusicRef?.current) {
-      backgroundMusicRef.current.play().catch((error) => {
-        console.log('Background music resume prevented:', error);
-      });
-    }
-  };
+  const { resumeBackgroundMusic } = useEndGameAudio({
+    soundFile: successSound,
+  });
 
   useEffect(() => {
-    stopBackgroundMusic();
-    playSuccessSound();
-  }, [backgroundMusicRef, isMuted]);
+    if (!score) {
+      navigate("/");
+      return;
+    }
+  }, [score, navigate]);
 
   useEffect(() => {
     if (score && !scoreSavedRef.current) {
@@ -70,8 +50,10 @@ export function Victory() {
         style={{
           backgroundColor: "rgba(0, 0, 0, 0.85)",
           backdropFilter: "blur(20px)",
-          maskImage: "linear-gradient(to bottom, transparent, black 5%, black 95%, transparent)",
-          WebkitMaskImage: "linear-gradient(to bottom, transparent, black 5%, black 95%, transparent)",
+          maskImage:
+            "linear-gradient(to bottom, transparent, black 5%, black 95%, transparent)",
+          WebkitMaskImage:
+            "linear-gradient(to bottom, transparent, black 5%, black 95%, transparent)",
         }}
         initial={{ opacity: 0, scale: 0.5 }}
         animate={{
@@ -84,11 +66,13 @@ export function Victory() {
           className="text-9xl font-bold text-center px-4"
           style={{
             fontFamily: "'UnifrakturCook', cursive",
-            background: "linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FFD700 100%)",
+            background:
+              "linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FFD700 100%)",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
             backgroundClip: "text",
-            filter: "drop-shadow(0 0 20px rgba(255, 215, 0, 0.8)) drop-shadow(0 0 40px rgba(255, 215, 0, 0.4))",
+            filter:
+              "drop-shadow(0 0 20px rgba(255, 215, 0, 0.8)) drop-shadow(0 0 40px rgba(255, 215, 0, 0.4))",
           }}
           animate={{
             filter: [
@@ -119,12 +103,8 @@ export function Victory() {
         transition={{ delay: 2, duration: 0.5 }}
         className="flex gap-4 mt-8"
       >
-        <Button onClick={handlePlayAgain}>
-          Play Again
-        </Button>
-        <Button onClick={() => navigate("/highscores")}>
-          View Highscores
-        </Button>
+        <Button onClick={handlePlayAgain}>Play Again</Button>
+        <Button onClick={() => navigate("/highscores")}>View Highscores</Button>
       </motion.div>
     </div>
   );
