@@ -31,6 +31,9 @@ export function ObjectSprite({ type, size }: ObjectSpriteProps) {
   const frameIndex = useObjectAnimation(ANIMATION_LOOP.length, FRAME_DELAY_MS);
   const currentSprite = KEY_SPRITES[ANIMATION_LOOP[frameIndex]];
 
+  // Make object sprite much smaller than tile
+  const objectSize = size * 0.4;
+
   return (
     <div
       className="absolute inset-0 flex items-center justify-center pointer-events-none"
@@ -42,8 +45,8 @@ export function ObjectSprite({ type, size }: ObjectSpriteProps) {
         src={currentSprite}
         alt={`${type} object`}
         style={{
-          width: `${size}px`,
-          height: `${size}px`,
+          width: `${objectSize}px`,
+          height: `${objectSize}px`,
           imageRendering: 'pixelated',
         }}
       />
