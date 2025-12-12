@@ -33,6 +33,7 @@ export const TILE_TYPES = {
   DOOR: "D",
   ARMOR: "A",
   OBSTACLE: "O",
+  ITEM: "I",
 } as const;
 
 export const PATH_TILE_TYPES = [
@@ -44,6 +45,7 @@ export const PATH_TILE_TYPES = [
   TILE_TYPES.DOOR,
   TILE_TYPES.ARMOR,
   TILE_TYPES.OBSTACLE,
+  TILE_TYPES.ITEM,
 ] as const;
 
 export const TILESET_CONFIG = {

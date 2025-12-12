@@ -9,7 +9,8 @@ export type TileType =
   | "K" // Key
   | "D" // Door
   | "A" // Weapon/Armor
-  | "O"; // Obstacle
+  | "O" // Obstacle
+  | "I"; // Item
 
 export type GameStatus = "playing" | "victory" | "defeat";
 

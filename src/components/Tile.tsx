@@ -24,6 +24,7 @@ const TILE_CONFIG: Record<TileType, { label: string; useSprite: boolean; fallbac
   D: { label: "D", useSprite: false, fallbackColor: "bg-amber-700", usePathBackground: true },
   A: { label: "A", useSprite: false, fallbackColor: "bg-purple-600", usePathBackground: true },
   O: { label: "O", useSprite: false, fallbackColor: "bg-orange-600", usePathBackground: true },
+  I: { label: "I", useSprite: false, fallbackColor: "bg-purple-600", usePathBackground: true },
 };
 
 export function Tile({
