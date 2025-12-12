@@ -21,7 +21,7 @@ import {
 import { handleTileInteraction } from "../utils/tileInteractions";
 import {
   TILE_SIZE,
-  TILE_TYPES,
+  PATH_TILE_TYPES,
   GRADIENT_GOLD,
   BACKGROUND_STYLE,
 } from "../constants/config";
@@ -236,7 +236,7 @@ export function Game() {
               {row.map((tile, colIndex) => {
                 const neighbors = getTileNeighbors(rowIndex, colIndex, tiles);
                 const tileType =
-                  tile.type === TILE_TYPES.WALL ? "wall" : "path";
+                  PATH_TILE_TYPES.includes(tile.type as any) ? "path" : "wall";
                 const sprite = calculateTileSprite(tileType, neighbors);
                 const isPlayerTile = playerPos?.row === rowIndex && playerPos?.col === colIndex;
 
