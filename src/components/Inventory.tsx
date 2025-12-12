@@ -30,7 +30,7 @@ export function Inventory({ inventory }: InventoryProps) {
           {slots.map((slot, idx) => (
             <div
               key={idx}
-              className="relative bg-gray-900 border-2 border-gray-700"
+              className="relative bg-gray-900 border-2 border-gray-700 overflow-hidden"
               style={{
                 width: `${SLOT_SIZE}px`,
                 height: `${SLOT_SIZE}px`,
