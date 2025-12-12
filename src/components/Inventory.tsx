@@ -23,7 +23,7 @@ export function Inventory({ inventory }: InventoryProps) {
   }
 
   return (
-    <div className="absolute top-4 right-4 z-10">
+    <div className="absolute top-1/2 -translate-y-1/2 right-4 z-10">
       <div className="bg-gray-800 border-4 border-gray-600 p-2">
         <div className="flex flex-col gap-1">
           {slots.map((slot, idx) => (
