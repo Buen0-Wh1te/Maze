@@ -4,7 +4,7 @@ import WarriorRun from '../assets/sprites/Warrior/Warrior_Run.png';
 
 interface PlayerSpriteProps {
   isMoving?: boolean;
-  direction?: 'down' | 'left' | 'right' | 'up';
+  direction?: 'left' | 'right';
   size?: number;
 }
 
@@ -12,30 +12,23 @@ const SPRITE_CONFIG = {
   frameSize: 192, // Each frame is 192x192px
   idle: {
     src: WarriorIdle,
-    frames: 8, // 8 frames per direction
+    frames: 8,
   },
   run: {
     src: WarriorRun,
-    frames: 6, // 6 frames per direction
+    frames: 6,
   },
-};
-
-const DIRECTION_ROW = {
-  down: 0,
-  left: 1,
-  right: 2,
-  up: 3,
 };
 
 export function PlayerSprite({
   isMoving = false,
-  direction = 'down',
+  direction = 'right',
   size = 32
 }: PlayerSpriteProps) {
   const [currentFrame, setCurrentFrame] = useState(0);
 
   const animation = isMoving ? SPRITE_CONFIG.run : SPRITE_CONFIG.idle;
-  const directionRow = DIRECTION_ROW[direction];
+  const isFlipped = direction === 'left';
 
   // Animate sprite frames
   useEffect(() => {
@@ -48,9 +41,8 @@ export function PlayerSprite({
     return () => clearInterval(interval);
   }, [isMoving, animation.frames]);
 
-  // Calculate sprite sheet position
+  // Calculate sprite sheet position (only use first row)
   const frameX = currentFrame * SPRITE_CONFIG.frameSize;
-  const frameY = directionRow * SPRITE_CONFIG.frameSize;
 
   return (
     <div
@@ -64,9 +56,10 @@ export function PlayerSprite({
           width: `${size}px`,
           height: `${size}px`,
           backgroundImage: `url(${animation.src})`,
-          backgroundPosition: `-${frameX * (size / SPRITE_CONFIG.frameSize)}px -${frameY * (size / SPRITE_CONFIG.frameSize)}px`,
-          backgroundSize: `${animation.frames * size}px ${4 * size}px`,
+          backgroundPosition: `-${frameX * (size / SPRITE_CONFIG.frameSize)}px 0px`,
+          backgroundSize: `${animation.frames * size}px ${size}px`,
           imageRendering: 'pixelated',
+          transform: isFlipped ? 'scaleX(-1)' : 'none',
         }}
       />
     </div>

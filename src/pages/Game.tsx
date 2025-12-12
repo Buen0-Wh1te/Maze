@@ -11,7 +11,7 @@ import { calculateTileSprite, setTilesetCacheUpdateCallback } from "../utils/til
 import { TILE_SIZE, TILE_TYPES, GRADIENT_GOLD, BACKGROUND_STYLE } from "../constants/config";
 import backgroundImage from "../assets/backgrounds/game.jpg";
 
-type Direction = 'down' | 'left' | 'right' | 'up';
+type Direction = 'left' | 'right';
 
 export function Game() {
   const { levelId } = useParams<{ levelId: string }>();
@@ -32,7 +32,7 @@ export function Game() {
 
   const gridScale = useGridScaling(tiles);
   const [, forceUpdate] = useState({});
-  const [playerDirection, setPlayerDirection] = useState<Direction>('down');
+  const [playerDirection, setPlayerDirection] = useState<Direction>('right');
   const [isPlayerMoving, setIsPlayerMoving] = useState(false);
 
   useEffect(() => {
@@ -41,12 +41,9 @@ export function Game() {
     });
   }, []);
 
-  const getDirection = (fromRow: number, fromCol: number, toRow: number, toCol: number): Direction => {
-    if (toRow < fromRow) return 'up';
-    if (toRow > fromRow) return 'down';
+  const getDirection = (fromCol: number, toCol: number): Direction => {
     if (toCol < fromCol) return 'left';
-    if (toCol > fromCol) return 'right';
-    return 'down'; // default
+    return 'right';
   };
 
   const handleTileClick = async (row: number, col: number) => {
@@ -58,9 +55,12 @@ export function Game() {
 
     if (updated[row][col].type === TILE_TYPES.WALL) return;
 
-    // Update direction and trigger movement animation
-    const direction = getDirection(playerPos.row, playerPos.col, row, col);
-    setPlayerDirection(direction);
+    // Update direction and trigger movement animation (only for horizontal movement)
+    if (col !== playerPos.col) {
+      const direction = getDirection(playerPos.col, col);
+      setPlayerDirection(direction);
+    }
+
     setIsPlayerMoving(true);
 
     // Reset movement state after animation
