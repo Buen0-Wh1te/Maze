@@ -60,6 +60,8 @@ export function Game() {
     const updated = revealTile(row, col);
     if (updated[row][col].type === TILE_TYPES.WALL) return;
 
+    if (updated[row][col].type === TILE_TYPES.DOOR) return;
+
     const oldPos = { row: playerPos.row, col: playerPos.col };
     const newPos = { row, col };
 
@@ -96,7 +98,12 @@ export function Game() {
           return;
       }
 
-      if (targetRow < 0 || targetRow >= tiles.length || targetCol < 0 || targetCol >= tiles[0].length) {
+      if (
+        targetRow < 0 ||
+        targetRow >= tiles.length ||
+        targetCol < 0 ||
+        targetCol >= tiles[0].length
+      ) {
         return;
       }
 
@@ -208,7 +215,8 @@ export function Game() {
                 const tileType =
                   tile.type === TILE_TYPES.WALL ? "wall" : "path";
                 const sprite = calculateTileSprite(tileType, neighbors);
-                const isPlayerTile = playerPos?.row === rowIndex && playerPos?.col === colIndex;
+                const isPlayerTile =
+                  playerPos?.row === rowIndex && playerPos?.col === colIndex;
 
                 return (
                   <div

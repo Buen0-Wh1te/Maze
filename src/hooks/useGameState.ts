@@ -11,7 +11,10 @@ export function useGameState(levelId: number | undefined, pseudo: string) {
   const [tiles, setTiles] = useState<TileState[][]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [playerPos, setPlayerPos] = useState<{ row: number; col: number } | null>(null);
+  const [playerPos, setPlayerPos] = useState<{
+    row: number;
+    col: number;
+  } | null>(null);
   const [moves, setMoves] = useState(0);
   const [startTime, setStartTime] = useState<number | null>(null);
 
@@ -44,7 +47,8 @@ export function useGameState(levelId: number | undefined, pseudo: string) {
             type,
             content: cell,
             revealed:
-              rowIndex === levelData.start.row && colIndex === levelData.start.col,
+              rowIndex === levelData.start.row &&
+              colIndex === levelData.start.col,
           };
         })
       );
