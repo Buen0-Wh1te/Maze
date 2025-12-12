@@ -8,7 +8,7 @@ export function Inventory({ inventory }: InventoryProps) {
   const { keys, weapon, items } = inventory;
 
   return (
-    <div className="bg-black/70 backdrop-blur-sm px-4 py-3 rounded-lg">
+    <div className="absolute top-4 right-4 bg-black/70 backdrop-blur-sm px-4 py-3 rounded-lg z-10">
       <h3 className="text-white font-bold text-sm mb-2">Inventory</h3>
 
       <div className="flex flex-col gap-2 text-xs">

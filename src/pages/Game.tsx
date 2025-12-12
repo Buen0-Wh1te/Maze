@@ -38,6 +38,7 @@ export function Game() {
     playerPos,
     moves,
     revealTile,
+    clearTile,
     movePlayer,
     checkVictory,
     handleEndGame,
@@ -77,6 +78,10 @@ export function Game() {
     );
 
     if (!interaction.canMove) return;
+
+    if (interaction.shouldClearTile) {
+      clearTile(row, col);
+    }
 
     const oldPos = { row: playerPos.row, col: playerPos.col };
     const newPos = { row, col };

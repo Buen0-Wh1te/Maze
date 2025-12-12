@@ -89,6 +89,13 @@ export function useGameState(levelId: number | undefined, pseudo: string) {
     return updated;
   };
 
+  const clearTile = (row: number, col: number) => {
+    const updated = [...tiles];
+    updated[row][col].type = TILE_TYPES.PATH;
+    updated[row][col].content = "C";
+    setTiles(updated);
+  };
+
   const movePlayer = (row: number, col: number) => {
     setPlayerPos({ row, col });
     setMoves((prev) => prev + 1);
@@ -130,6 +137,7 @@ export function useGameState(levelId: number | undefined, pseudo: string) {
     moves,
     startTime,
     revealTile,
+    clearTile,
     movePlayer,
     checkVictory,
     handleEndGame,

@@ -5,6 +5,7 @@ import { TILE_TYPES } from "../constants/config";
 export interface TileInteractionResult {
   canMove: boolean;
   shouldShowBattle?: boolean;
+  shouldClearTile?: boolean;
   enemy?: Enemy;
   message?: string;
 }
@@ -30,7 +31,7 @@ export function handleTileInteraction(
     if (color) {
       addKey(color);
     }
-    return { canMove: true, message: `Picked up ${color} key!` };
+    return { canMove: true, shouldClearTile: true, message: `Picked up ${color} key!` };
   }
 
   // Door - check if player has key
@@ -52,7 +53,7 @@ export function handleTileInteraction(
       const item = level.items.find((i) => i.id === itemId);
       if (item) {
         setWeapon(item);
-        return { canMove: true, message: `Picked up ${item.name}!` };
+        return { canMove: true, shouldClearTile: true, message: `Picked up ${item.name}!` };
       }
     }
     return { canMove: true };
@@ -65,7 +66,7 @@ export function handleTileInteraction(
       const item = level.items.find((i) => i.id === itemId);
       if (item) {
         addItem(item);
-        return { canMove: true, message: `Picked up ${item.name}!` };
+        return { canMove: true, shouldClearTile: true, message: `Picked up ${item.name}!` };
       }
     }
     return { canMove: true };
