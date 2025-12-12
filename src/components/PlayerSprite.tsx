@@ -32,7 +32,7 @@ export function PlayerSprite({
 
   // Animate sprite frames
   useEffect(() => {
-    const frameDelay = isMoving ? 100 : 150; // Faster animation when moving
+    const frameDelay = isMoving ? 50 : 120; // Very fast animation when moving
 
     const interval = setInterval(() => {
       setCurrentFrame((prev) => (prev + 1) % animation.frames);
