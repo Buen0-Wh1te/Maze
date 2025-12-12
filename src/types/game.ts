@@ -31,6 +31,7 @@ export interface TileState {
   type: TileType;
   content: string; // API content
   revealed: boolean;
+  itemId?: string | null;
 }
 
 export interface GameState {

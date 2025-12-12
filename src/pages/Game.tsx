@@ -5,10 +5,24 @@ import { Tile } from "../components/Tile";
 import { useGame } from "../hooks/useGame";
 import { useGameState } from "../hooks/useGameState";
 import { useGridScaling } from "../hooks/useGridScaling";
-import { isAdjacentToRevealed, isAdjacentToPlayer, getTileNeighbors } from "../utils/tileLogic";
-import { calculateTileSprite, setTilesetCacheUpdateCallback } from "../utils/tileset";
-import { TILE_SIZE, TILE_TYPES, GRADIENT_GOLD, BACKGROUND_STYLE } from "../constants/config";
+import {
+  isAdjacentToRevealed,
+  isAdjacentToPlayer,
+  getTileNeighbors,
+} from "../utils/tileLogic";
+import {
+  calculateTileSprite,
+  setTilesetCacheUpdateCallback,
+} from "../utils/tileset";
+import {
+  TILE_SIZE,
+  TILE_TYPES,
+  GRADIENT_GOLD,
+  BACKGROUND_STYLE,
+} from "../constants/config";
 import backgroundImage from "../assets/backgrounds/game.jpg";
+import { fetchItems } from "../services/api";
+import type { Item, Inventory, TileState } from "../types";
 
 export function Game() {
   const { levelId } = useParams<{ levelId: string }>();
@@ -27,6 +41,13 @@ export function Game() {
     retryLevel,
   } = useGameState(levelId ? Number(levelId) : undefined, pseudo);
 
+  const [itemsCatalog, setItemsCatalog] = useState<Item[]>([]);
+  const [inventory, setInventory] = useState<Inventory>({
+    keys: [],
+    weapon: null,
+    items: [],
+  });
+
   const gridScale = useGridScaling(tiles);
   const [, forceUpdate] = useState({});
 
@@ -34,6 +55,14 @@ export function Game() {
     setTilesetCacheUpdateCallback(() => {
       forceUpdate({});
     });
+  }, []);
+
+  useEffect(() => {
+    async function loadItems() {
+      const fetchedItems = await fetchItems();
+      setItemsCatalog(fetchedItems);
+    }
+    loadItems();
   }, []);
 
   const handleTileClick = async (row: number, col: number) => {
@@ -44,6 +73,18 @@ export function Game() {
     const updated = revealTile(row, col);
 
     if (updated[row][col].type === TILE_TYPES.WALL) return;
+
+    const target: TileState = tiles[row][col];
+
+    if (target.itemId) {
+      const item = itemsCatalog.find((i) => i.id === Number(target.itemId));
+      if (item) {
+        setInventory((prev) => ({
+          ...prev,
+          items: prev.items.includes(item) ? prev.items : [...prev.items, item],
+        }));
+      }
+    }
 
     movePlayer(row, col);
     await checkVictory(row, col);
@@ -114,7 +155,8 @@ export function Game() {
           Moves: <span className="text-white font-bold">{moves}</span>
         </span>
         <span className="text-gray-300">
-          Tiles Revealed: <span className="text-white font-bold">{tilesRevealed}</span>
+          Tiles Revealed:{" "}
+          <span className="text-white font-bold">{tilesRevealed}</span>
         </span>
       </div>
       <div className="flex-1 flex items-center justify-center w-full px-4">
@@ -129,22 +171,33 @@ export function Game() {
           }}
         >
           {tiles.map((row, rowIndex) => (
-            <div key={rowIndex} className="flex gap-0" style={{ height: `${TILE_SIZE}px` }}>
+            <div
+              key={rowIndex}
+              className="flex gap-0"
+              style={{ height: `${TILE_SIZE}px` }}
+            >
               {row.map((tile, colIndex) => {
                 const neighbors = getTileNeighbors(rowIndex, colIndex, tiles);
-                const tileType = tile.type === TILE_TYPES.WALL ? "wall" : "path";
+                const tileType =
+                  tile.type === TILE_TYPES.WALL ? "wall" : "path";
                 const sprite = calculateTileSprite(tileType, neighbors);
 
                 return (
                   <div
                     key={`${rowIndex}-${colIndex}`}
                     className="relative"
-                    style={{ width: `${TILE_SIZE}px`, height: `${TILE_SIZE}px` }}
+                    style={{
+                      width: `${TILE_SIZE}px`,
+                      height: `${TILE_SIZE}px`,
+                    }}
                   >
                     <Tile
                       type={tile.type}
                       revealed={tile.revealed}
-                      isPlayer={playerPos?.row === rowIndex && playerPos?.col === colIndex}
+                      isPlayer={
+                        playerPos?.row === rowIndex &&
+                        playerPos?.col === colIndex
+                      }
                       onClick={() => handleTileClick(rowIndex, colIndex)}
                       spriteX={sprite.x}
                       spriteY={sprite.y}
