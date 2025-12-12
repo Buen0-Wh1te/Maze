@@ -118,7 +118,7 @@ function weightedHammingDistance(a: number, b: number): number {
   return distance;
 }
 
-async function findMatchingTile(targetBitmask: number, _type: TileType): Promise<[number, number]> {
+async function findMatchingTile(targetBitmask: number): Promise<[number, number]> {
   const imageData = await loadBitmapMask();
   let closestMatch: [number, number] = [0, 0];
   let closestDistance: number = TILESET_CONFIG.MAX_WEIGHTED_DISTANCE;
@@ -161,7 +161,7 @@ export function calculateTileSprite(
     return { x, y, type };
   }
 
-  findMatchingTile(bitmask, type).then(([x, y]) => {
+  findMatchingTile(bitmask).then(([x, y]) => {
     tilePositionCache[cacheKey] = [x, y];
     if (onCacheUpdate) {
       onCacheUpdate();

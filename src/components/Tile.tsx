@@ -11,6 +11,7 @@ interface TileProps {
   onClick?: () => void;
   spriteX?: number;
   spriteY?: number;
+  debugMode?: boolean;
 }
 
 const TILE_CONFIG: Record<TileType, { label: string; useSprite: boolean; fallbackColor: string; usePathBackground: boolean }> = {
@@ -25,11 +26,20 @@ const TILE_CONFIG: Record<TileType, { label: string; useSprite: boolean; fallbac
   O: { label: "O", useSprite: false, fallbackColor: "bg-orange-600", usePathBackground: true },
 };
 
-export function Tile({ type, revealed, isPlayer = false, onClick, spriteX = 0, spriteY = 0 }: TileProps) {
+export function Tile({
+  type,
+  revealed,
+  isPlayer = false,
+  onClick,
+  spriteX = 0,
+  spriteY = 0,
+  debugMode = false,
+}: TileProps) {
   const config = TILE_CONFIG[type] || { label: "", useSprite: false, fallbackColor: "bg-gray-600", usePathBackground: false };
-  const useSprite = config.useSprite && revealed;
-  const usePathBackground = config.usePathBackground && revealed;
-  const showObjectSprite = type === "K" && revealed;
+  const effectiveRevealed = debugMode || revealed;
+  const useSprite = config.useSprite && effectiveRevealed;
+  const usePathBackground = config.usePathBackground && effectiveRevealed;
+  const showObjectSprite = type === "K" && effectiveRevealed;
 
   const tileset = type === "W" ? tilesetWall : tilesetPath;
   const backgroundPositionX = TILE_BORDER + spriteX * (TILE_SIZE + TILE_GAP);
@@ -37,7 +47,7 @@ export function Tile({ type, revealed, isPlayer = false, onClick, spriteX = 0, s
 
   // Determine background styling
   const getBackgroundStyle = () => {
-    if (!revealed) {
+    if (!effectiveRevealed) {
       return { className: "bg-gray-800", style: {} };
     }
 
@@ -75,7 +85,7 @@ export function Tile({ type, revealed, isPlayer = false, onClick, spriteX = 0, s
   return (
     <div
       onClick={onClick}
-      className={`absolute inset-0 flex items-center justify-center font-bold text-white cursor-pointer hover:brightness-110 ${className}`}
+      className={`absolute inset-0 flex items-center justify-center font-bold text-white cursor-pointer hover:brightness-110 ${className} ${isPlayer ? "ring-4 ring-blue-400 ring-inset" : ""}`}
       style={{
         ...style,
         width: `${TILE_SIZE}px`,
@@ -83,7 +93,17 @@ export function Tile({ type, revealed, isPlayer = false, onClick, spriteX = 0, s
         fontSize: "20px",
       }}
     >
-      {!useSprite && !usePathBackground && revealed && !isPlayer && config.label}
+      {debugMode && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span
+            className="text-white font-bold text-xs bg-black/70 px-1 rounded pointer-events-none"
+            style={{ fontSize: "10px", textShadow: "0 0 2px black" }}
+          >
+            {type}
+          </span>
+        </div>
+      )}
+      {!useSprite && !usePathBackground && effectiveRevealed && !isPlayer && config.label}
       {showObjectSprite && <ObjectSprite type="K" size={TILE_SIZE} />}
     </div>
   );
