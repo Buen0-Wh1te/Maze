@@ -9,7 +9,7 @@ interface PlayerSpriteProps {
 }
 
 const SPRITE_CONFIG = {
-  frameSize: 48, // Each frame is 48x48px
+  frameSize: 64, // Each frame is 64x64px
   idle: {
     src: WarriorIdle,
     frames: 8, // 8 frames per direction
