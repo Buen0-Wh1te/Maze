@@ -50,7 +50,7 @@ export function BattleModal({ enemy, hasWeapon, onFight, onFlee }: BattleModalPr
         </div>
 
         {!hasWeapon && (
-          <div className="bg-yellow-900/30 rounded p-3 mb-4">
+          <div className="p-3 mb-4">
             <p className="text-white text-sm text-center">
               You don't have a weapon! You cannot fight this enemy.
             </p>
