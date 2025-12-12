@@ -63,6 +63,7 @@ export function PlayerSprite({
           backgroundSize: `${animation.frames * spriteSize}px ${spriteSize}px`,
           imageRendering: 'pixelated',
           transform: isFlipped ? 'scaleX(-1)' : 'none',
+          transformOrigin: 'center center',
         }}
       />
     </div>
