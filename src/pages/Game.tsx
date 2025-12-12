@@ -34,6 +34,7 @@ export function Game() {
   const [, forceUpdate] = useState({});
   const [playerDirection, setPlayerDirection] = useState<Direction>('right');
   const [isPlayerMoving, setIsPlayerMoving] = useState(false);
+  const [previousPos, setPreviousPos] = useState<{ row: number; col: number } | null>(null);
 
   useEffect(() => {
     setTilesetCacheUpdateCallback(() => {
@@ -55,6 +56,9 @@ export function Game() {
 
     if (updated[row][col].type === TILE_TYPES.WALL) return;
 
+    // Store previous position for transition
+    setPreviousPos({ row: playerPos.row, col: playerPos.col });
+
     // Update direction and trigger movement animation (only for horizontal movement)
     if (col !== playerPos.col) {
       const direction = getDirection(playerPos.col, col);
@@ -62,13 +66,14 @@ export function Game() {
     }
 
     setIsPlayerMoving(true);
+    movePlayer(row, col);
 
     // Reset movement state after animation
     setTimeout(() => {
       setIsPlayerMoving(false);
+      setPreviousPos(null);
     }, 300);
 
-    movePlayer(row, col);
     await checkVictory(row, col);
   };
 
@@ -158,6 +163,16 @@ export function Game() {
                 const tileType = tile.type === TILE_TYPES.WALL ? "wall" : "path";
                 const sprite = calculateTileSprite(tileType, neighbors);
                 const isPlayerTile = playerPos?.row === rowIndex && playerPos?.col === colIndex;
+                const isPreviousTile = previousPos?.row === rowIndex && previousPos?.col === colIndex;
+
+                // Calculate transition offset if this is the current player tile and we're moving
+                let transitionOffset = { x: 0, y: 0 };
+                if (isPlayerTile && previousPos && isPlayerMoving) {
+                  transitionOffset = {
+                    x: (previousPos.col - colIndex) * TILE_SIZE,
+                    y: (previousPos.row - rowIndex) * TILE_SIZE,
+                  };
+                }
 
                 return (
                   <div
@@ -173,11 +188,12 @@ export function Game() {
                       spriteX={sprite.x}
                       spriteY={sprite.y}
                     />
-                    {isPlayerTile && (
+                    {(isPlayerTile || isPreviousTile) && (
                       <PlayerSprite
                         isMoving={isPlayerMoving}
                         direction={playerDirection}
                         size={TILE_SIZE}
+                        transitionOffset={transitionOffset}
                       />
                     )}
                   </div>

@@ -6,6 +6,7 @@ interface PlayerSpriteProps {
   isMoving?: boolean;
   direction?: 'left' | 'right';
   size?: number;
+  transitionOffset?: { x: number; y: number };
 }
 
 const SPRITE_CONFIG = {
@@ -23,7 +24,8 @@ const SPRITE_CONFIG = {
 export function PlayerSprite({
   isMoving = false,
   direction = 'right',
-  size = 32
+  size = 32,
+  transitionOffset = { x: 0, y: 0 }
 }: PlayerSpriteProps) {
   const [currentFrame, setCurrentFrame] = useState(0);
 
@@ -52,6 +54,8 @@ export function PlayerSprite({
       className="absolute inset-0 flex items-center justify-center pointer-events-none z-10"
       style={{
         imageRendering: 'pixelated',
+        transform: `translate(${transitionOffset.x}px, ${transitionOffset.y}px)`,
+        transition: isMoving ? 'transform 300ms ease-out' : 'none',
       }}
     >
       <div
