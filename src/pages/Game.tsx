@@ -29,6 +29,7 @@ export function Game() {
 
   const gridScale = useGridScaling(tiles);
   const [, forceUpdate] = useState({});
+  const [debugMode, setDebugMode] = useState(false);
 
   useEffect(() => {
     setTilesetCacheUpdateCallback(() => {
@@ -116,6 +117,16 @@ export function Game() {
         <span className="text-gray-300">
           Tiles Revealed: <span className="text-white font-bold">{tilesRevealed}</span>
         </span>
+        <button
+          onClick={() => setDebugMode(!debugMode)}
+          className={`px-3 py-1 rounded text-xs font-bold transition-colors ${
+            debugMode
+              ? "bg-red-600 hover:bg-red-700 text-white"
+              : "bg-gray-700 hover:bg-gray-600 text-gray-300"
+          }`}
+        >
+          {debugMode ? "DEBUG: ON" : "DEBUG: OFF"}
+        </button>
       </div>
       <div className="flex-1 flex items-center justify-center w-full px-4">
         <div
@@ -148,6 +159,7 @@ export function Game() {
                       onClick={() => handleTileClick(rowIndex, colIndex)}
                       spriteX={sprite.x}
                       spriteY={sprite.y}
+                      debugMode={debugMode}
                     />
                   </div>
                 );
