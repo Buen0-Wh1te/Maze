@@ -1,4 +1,5 @@
 import type { Inventory as InventoryType } from "../types/game";
+import KeySprite from "../assets/sprites/Key/keys_1_1.png";
 
 interface InventoryProps {
   inventory: InventoryType;
@@ -39,14 +40,24 @@ export function Inventory({ inventory }: InventoryProps) {
               {slot.data && (
                 <div className="absolute inset-0 flex items-center justify-center">
                   {slot.type === "key" && (
-                    <div className="flex flex-col items-center justify-center">
+                    <div className="relative w-full h-full flex items-center justify-center">
                       <div
-                        className="w-6 h-6 rounded-full"
+                        className="absolute inset-0 blur-md"
                         style={{
-                          backgroundColor: slot.data === "red" ? "#dc2626" : slot.data === "blue" ? "#2563eb" : "#6b7280"
+                          backgroundColor: slot.data === "red" ? "#dc2626" : slot.data === "blue" ? "#2563eb" : slot.data === "green" ? "#16a34a" : slot.data === "yellow" ? "#eab308" : "#6b7280",
+                          opacity: 0.4,
                         }}
                       />
-                      <span className="text-white text-xs mt-1">{slot.data[0]?.toUpperCase()}</span>
+                      <img
+                        src={KeySprite}
+                        alt="Key"
+                        className="relative z-10"
+                        style={{
+                          width: "32px",
+                          height: "32px",
+                          imageRendering: "pixelated",
+                        }}
+                      />
                     </div>
                   )}
                   {slot.type === "weapon" && (
