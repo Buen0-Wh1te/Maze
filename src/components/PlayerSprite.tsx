@@ -44,8 +44,8 @@ export function PlayerSprite({
   // Calculate sprite sheet position (only use first row)
   const frameX = currentFrame * SPRITE_CONFIG.frameSize;
 
-  // Make sprite 1.5x larger than tile
-  const spriteSize = size * 1.5;
+  // Make sprite slightly larger than tile
+  const spriteSize = size * 1.2;
 
   return (
     <div
