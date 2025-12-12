@@ -19,9 +19,11 @@ export const GAME_LAYOUT = {
 } as const;
 
 export const SCORE_FACTORS = {
-  TILES_REVEALED_MULTIPLIER: 10,
-  MOVES_PENALTY: 2,
-  TIME_PENALTY: 1,
+  BASE_SCORE: 10000,
+  TIME_BONUS_PER_SECOND: 10,
+  TILE_PENALTY: 5,
+  MOVE_PENALTY: 3,
+  MIN_SCORE: 100,
 } as const;
 export const TILE_TYPES = {
   PATH: "C",
