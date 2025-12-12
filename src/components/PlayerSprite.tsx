@@ -9,7 +9,7 @@ interface PlayerSpriteProps {
 }
 
 const SPRITE_CONFIG = {
-  frameSize: 64, // Each frame is 64x64px
+  frameSize: 192, // Each frame is 192x192px
   idle: {
     src: WarriorIdle,
     frames: 8, // 8 frames per direction
@@ -64,8 +64,8 @@ export function PlayerSprite({
           width: `${size}px`,
           height: `${size}px`,
           backgroundImage: `url(${animation.src})`,
-          backgroundPosition: `-${frameX}px -${frameY}px`,
-          backgroundSize: `${(animation.frames * SPRITE_CONFIG.frameSize * size) / SPRITE_CONFIG.frameSize}px ${(4 * SPRITE_CONFIG.frameSize * size) / SPRITE_CONFIG.frameSize}px`,
+          backgroundPosition: `-${frameX * (size / SPRITE_CONFIG.frameSize)}px -${frameY * (size / SPRITE_CONFIG.frameSize)}px`,
+          backgroundSize: `${animation.frames * size}px ${4 * size}px`,
           imageRendering: 'pixelated',
         }}
       />
