@@ -41,6 +41,7 @@ export function Game() {
 
   const gridScale = useGridScaling(tiles);
   const [, forceUpdate] = useState({});
+  const [debugMode, setDebugMode] = useState(false);
 
   useEffect(() => {
     setTilesetCacheUpdateCallback(() => {
@@ -60,6 +61,40 @@ export function Game() {
     movePlayer(row, col);
     await checkVictory(row, col);
   };
+
+  useEffect(() => {
+    const movePlayer = (row: number, col: number) => {
+      handleTileClick(row, col);
+    };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!playerPos) return;
+
+      let targetRow = playerPos.row;
+      let targetCol = playerPos.col;
+
+      switch (e.key) {
+        case "ArrowUp":
+          targetRow -= 1;
+          break;
+        case "ArrowDown":
+          targetRow += 1;
+          break;
+        case "ArrowLeft":
+          targetCol -= 1;
+          break;
+        case "ArrowRight":
+          targetCol += 1;
+          break;
+        default:
+          return;
+      }
+
+      movePlayer(targetRow, targetCol);
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  });
 
   if (loading) {
     return (
@@ -129,6 +164,16 @@ export function Game() {
           Tiles Revealed:{" "}
           <span className="text-white font-bold">{tilesRevealed}</span>
         </span>
+        <button
+          onClick={() => setDebugMode(!debugMode)}
+          className={`px-3 py-1 rounded text-xs font-bold transition-colors ${
+            debugMode
+              ? "bg-red-600 hover:bg-red-700 text-white"
+              : "bg-gray-700 hover:bg-gray-600 text-gray-300"
+          }`}
+        >
+          {debugMode ? "DEBUG: ON" : "DEBUG: OFF"}
+        </button>
       </div>
       <div className="flex-1 flex items-center justify-center w-full px-4">
         <div
@@ -172,6 +217,7 @@ export function Game() {
                       onClick={() => handleTileClick(rowIndex, colIndex)}
                       spriteX={sprite.x}
                       spriteY={sprite.y}
+                      debugMode={debugMode}
                     />
                   </div>
                 );
