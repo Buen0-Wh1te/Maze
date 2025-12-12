@@ -35,6 +35,7 @@ export function Game() {
   const [playerDirection, setPlayerDirection] = useState<Direction>('right');
   const [isPlayerMoving, setIsPlayerMoving] = useState(false);
   const [previousPos, setPreviousPos] = useState<{ row: number; col: number } | null>(null);
+  const [animationKey, setAnimationKey] = useState(0);
 
   useEffect(() => {
     setTilesetCacheUpdateCallback(() => {
@@ -65,8 +66,14 @@ export function Game() {
       setPlayerDirection(direction);
     }
 
-    setIsPlayerMoving(true);
+    // Move player position immediately
     movePlayer(row, col);
+
+    // Trigger animation on next frame
+    requestAnimationFrame(() => {
+      setIsPlayerMoving(true);
+      setAnimationKey(prev => prev + 1);
+    });
 
     // Reset movement state after animation
     setTimeout(() => {
@@ -163,11 +170,11 @@ export function Game() {
                 const tileType = tile.type === TILE_TYPES.WALL ? "wall" : "path";
                 const sprite = calculateTileSprite(tileType, neighbors);
                 const isPlayerTile = playerPos?.row === rowIndex && playerPos?.col === colIndex;
-                const isPreviousTile = previousPos?.row === rowIndex && previousPos?.col === colIndex;
 
-                // Calculate transition offset if this is the current player tile and we're moving
+                // Calculate transition offset - sprite starts at old position, moves to new position
                 let transitionOffset = { x: 0, y: 0 };
                 if (isPlayerTile && previousPos && isPlayerMoving) {
+                  // Offset from old position to current position
                   transitionOffset = {
                     x: (previousPos.col - colIndex) * TILE_SIZE,
                     y: (previousPos.row - rowIndex) * TILE_SIZE,
@@ -188,8 +195,9 @@ export function Game() {
                       spriteX={sprite.x}
                       spriteY={sprite.y}
                     />
-                    {(isPlayerTile || isPreviousTile) && (
+                    {isPlayerTile && (
                       <PlayerSprite
+                        key={animationKey}
                         isMoving={isPlayerMoving}
                         direction={playerDirection}
                         size={TILE_SIZE}
