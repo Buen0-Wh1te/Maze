@@ -1,53 +1,62 @@
 import { useEffect, useState } from 'react';
 import WarriorIdle from '../assets/sprites/Warrior/Warrior_Idle.png';
 import WarriorRun from '../assets/sprites/Warrior/Warrior_Run.png';
+import { PLAYER_SPRITE_CONFIG } from '../constants/config';
 
 interface PlayerSpriteProps {
   isMoving?: boolean;
   direction?: 'left' | 'right';
-  size?: number;
-  transitionOffset?: { x: number; y: number };
+  size: number;
+  transitionOffset: { x: number; y: number };
 }
 
-const SPRITE_CONFIG = {
-  frameSize: 192, // Each frame is 192x192px
-  idle: {
-    src: WarriorIdle,
-    frames: 8,
-  },
-  run: {
-    src: WarriorRun,
-    frames: 6,
-  },
-};
+const SPRITE_SHEET_CONFIG = {
+  FRAME_SIZE: 192,
+  IDLE_FRAMES: 8,
+  RUN_FRAMES: 6,
+} as const;
+
+function useSpriteAnimation(isMoving: boolean, totalFrames: number) {
+  const [currentFrame, setCurrentFrame] = useState(0);
+
+  useEffect(() => {
+    const frameDelay = isMoving
+      ? PLAYER_SPRITE_CONFIG.FRAME_DELAY_RUNNING_MS
+      : PLAYER_SPRITE_CONFIG.FRAME_DELAY_IDLE_MS;
+
+    const interval = setInterval(() => {
+      setCurrentFrame((prev) => (prev + 1) % totalFrames);
+    }, frameDelay);
+
+    return () => clearInterval(interval);
+  }, [isMoving, totalFrames]);
+
+  return currentFrame;
+}
+
+function calculateSpritePosition(currentFrame: number, spriteSize: number) {
+  const frameX = currentFrame * SPRITE_SHEET_CONFIG.FRAME_SIZE;
+  const scale = spriteSize / SPRITE_SHEET_CONFIG.FRAME_SIZE;
+
+  return {
+    x: frameX * scale,
+    width: spriteSize,
+  };
+}
 
 export function PlayerSprite({
   isMoving = false,
   direction = 'right',
-  size = 32,
-  transitionOffset = { x: 0, y: 0 }
+  size,
+  transitionOffset,
 }: PlayerSpriteProps) {
-  const [currentFrame, setCurrentFrame] = useState(0);
+  const spriteSheet = isMoving ? WarriorRun : WarriorIdle;
+  const totalFrames = isMoving ? SPRITE_SHEET_CONFIG.RUN_FRAMES : SPRITE_SHEET_CONFIG.IDLE_FRAMES;
 
-  const animation = isMoving ? SPRITE_CONFIG.run : SPRITE_CONFIG.idle;
+  const currentFrame = useSpriteAnimation(isMoving, totalFrames);
+  const spriteSize = size * PLAYER_SPRITE_CONFIG.SIZE_MULTIPLIER;
+  const { x: frameX, width } = calculateSpritePosition(currentFrame, spriteSize);
   const isFlipped = direction === 'left';
-
-  // Animate sprite frames
-  useEffect(() => {
-    const frameDelay = isMoving ? 100 : 150; // Smoother animation timing
-
-    const interval = setInterval(() => {
-      setCurrentFrame((prev) => (prev + 1) % animation.frames);
-    }, frameDelay);
-
-    return () => clearInterval(interval);
-  }, [isMoving, animation.frames]);
-
-  // Calculate sprite sheet position (only use first row)
-  const frameX = currentFrame * SPRITE_CONFIG.frameSize;
-
-  // Make sprite slightly larger than tile
-  const spriteSize = size * 1.2;
 
   return (
     <div
@@ -55,16 +64,16 @@ export function PlayerSprite({
       style={{
         imageRendering: 'pixelated',
         transform: `translate(${transitionOffset.x}px, ${transitionOffset.y}px)`,
-        transition: isMoving ? 'transform 600ms linear' : 'none',
+        transition: isMoving ? `transform ${PLAYER_SPRITE_CONFIG.MOVEMENT_DURATION_MS}ms linear` : 'none',
       }}
     >
       <div
         style={{
-          width: `${spriteSize}px`,
-          height: `${spriteSize}px`,
-          backgroundImage: `url(${animation.src})`,
-          backgroundPosition: `-${frameX * (spriteSize / SPRITE_CONFIG.frameSize)}px 0px`,
-          backgroundSize: `${animation.frames * spriteSize}px ${spriteSize}px`,
+          width: `${width}px`,
+          height: `${width}px`,
+          backgroundImage: `url(${spriteSheet})`,
+          backgroundPosition: `-${frameX}px 0px`,
+          backgroundSize: `${totalFrames * width}px ${width}px`,
           imageRendering: 'pixelated',
           transform: isFlipped ? 'scaleX(-1)' : 'none',
           transformOrigin: 'center center',

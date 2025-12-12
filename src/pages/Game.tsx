@@ -6,12 +6,11 @@ import { PlayerSprite } from "../components/PlayerSprite";
 import { useGame } from "../hooks/useGame";
 import { useGameState } from "../hooks/useGameState";
 import { useGridScaling } from "../hooks/useGridScaling";
+import { usePlayerMovement } from "../hooks/usePlayerMovement";
 import { isAdjacentToRevealed, isAdjacentToPlayer, getTileNeighbors } from "../utils/tileLogic";
 import { calculateTileSprite, setTilesetCacheUpdateCallback } from "../utils/tileset";
 import { TILE_SIZE, TILE_TYPES, GRADIENT_GOLD, BACKGROUND_STYLE } from "../constants/config";
 import backgroundImage from "../assets/backgrounds/game.jpg";
-
-type Direction = 'left' | 'right';
 
 export function Game() {
   const { levelId } = useParams<{ levelId: string }>();
@@ -32,9 +31,7 @@ export function Game() {
 
   const gridScale = useGridScaling(tiles);
   const [, forceUpdate] = useState({});
-  const [playerDirection, setPlayerDirection] = useState<Direction>('right');
-  const [isPlayerMoving, setIsPlayerMoving] = useState(false);
-  const [transitionOffset, setTransitionOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const playerMovement = usePlayerMovement();
 
   useEffect(() => {
     setTilesetCacheUpdateCallback(() => {
@@ -42,46 +39,19 @@ export function Game() {
     });
   }, []);
 
-  const getDirection = (fromCol: number, toCol: number): Direction => {
-    if (toCol < fromCol) return 'left';
-    return 'right';
-  };
-
   const handleTileClick = async (row: number, col: number) => {
     if (!playerPos) return;
     if (!isAdjacentToRevealed(row, col, tiles)) return;
     if (!isAdjacentToPlayer(row, col, playerPos)) return;
 
     const updated = revealTile(row, col);
-
     if (updated[row][col].type === TILE_TYPES.WALL) return;
 
-    // Update direction (only for horizontal movement)
-    if (col !== playerPos.col) {
-      const direction = getDirection(playerPos.col, col);
-      setPlayerDirection(direction);
-    }
+    const oldPos = { row: playerPos.row, col: playerPos.col };
+    const newPos = { row, col };
 
-    // Calculate offset from old position to new position
-    const offsetX = (playerPos.col - col) * TILE_SIZE;
-    const offsetY = (playerPos.row - row) * TILE_SIZE;
-
-    // Move player position immediately
     movePlayer(row, col);
-
-    // Set initial offset (sprite starts at old position)
-    setTransitionOffset({ x: offsetX, y: offsetY });
-    setIsPlayerMoving(true);
-
-    // Animate to new position on next frame
-    requestAnimationFrame(() => {
-      setTransitionOffset({ x: 0, y: 0 });
-    });
-
-    // Reset movement state after animation
-    setTimeout(() => {
-      setIsPlayerMoving(false);
-    }, 600);
+    playerMovement.startMovement(oldPos, newPos);
 
     await checkVictory(row, col);
   };
@@ -189,10 +159,10 @@ export function Game() {
                     />
                     {isPlayerTile && (
                       <PlayerSprite
-                        isMoving={isPlayerMoving}
-                        direction={playerDirection}
+                        isMoving={playerMovement.isMoving}
+                        direction={playerMovement.direction}
                         size={TILE_SIZE}
-                        transitionOffset={transitionOffset}
+                        transitionOffset={playerMovement.transitionOffset}
                       />
                     )}
                   </div>
