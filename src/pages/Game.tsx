@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Button } from "../components/Button";
 import { Tile } from "../components/Tile";
+import { PlayerSprite } from "../components/PlayerSprite";
 import { useGame } from "../hooks/useGame";
 import { useGameState } from "../hooks/useGameState";
 import { useGridScaling } from "../hooks/useGridScaling";
@@ -9,6 +10,8 @@ import { isAdjacentToRevealed, isAdjacentToPlayer, getTileNeighbors } from "../u
 import { calculateTileSprite, setTilesetCacheUpdateCallback } from "../utils/tileset";
 import { TILE_SIZE, TILE_TYPES, GRADIENT_GOLD, BACKGROUND_STYLE } from "../constants/config";
 import backgroundImage from "../assets/backgrounds/game.jpg";
+
+type Direction = 'down' | 'left' | 'right' | 'up';
 
 export function Game() {
   const { levelId } = useParams<{ levelId: string }>();
@@ -29,12 +32,22 @@ export function Game() {
 
   const gridScale = useGridScaling(tiles);
   const [, forceUpdate] = useState({});
+  const [playerDirection, setPlayerDirection] = useState<Direction>('down');
+  const [isPlayerMoving, setIsPlayerMoving] = useState(false);
 
   useEffect(() => {
     setTilesetCacheUpdateCallback(() => {
       forceUpdate({});
     });
   }, []);
+
+  const getDirection = (fromRow: number, fromCol: number, toRow: number, toCol: number): Direction => {
+    if (toRow < fromRow) return 'up';
+    if (toRow > fromRow) return 'down';
+    if (toCol < fromCol) return 'left';
+    if (toCol > fromCol) return 'right';
+    return 'down'; // default
+  };
 
   const handleTileClick = async (row: number, col: number) => {
     if (!playerPos) return;
@@ -44,6 +57,16 @@ export function Game() {
     const updated = revealTile(row, col);
 
     if (updated[row][col].type === TILE_TYPES.WALL) return;
+
+    // Update direction and trigger movement animation
+    const direction = getDirection(playerPos.row, playerPos.col, row, col);
+    setPlayerDirection(direction);
+    setIsPlayerMoving(true);
+
+    // Reset movement state after animation
+    setTimeout(() => {
+      setIsPlayerMoving(false);
+    }, 300);
 
     movePlayer(row, col);
     await checkVictory(row, col);
@@ -134,6 +157,7 @@ export function Game() {
                 const neighbors = getTileNeighbors(rowIndex, colIndex, tiles);
                 const tileType = tile.type === TILE_TYPES.WALL ? "wall" : "path";
                 const sprite = calculateTileSprite(tileType, neighbors);
+                const isPlayerTile = playerPos?.row === rowIndex && playerPos?.col === colIndex;
 
                 return (
                   <div
@@ -144,11 +168,18 @@ export function Game() {
                     <Tile
                       type={tile.type}
                       revealed={tile.revealed}
-                      isPlayer={playerPos?.row === rowIndex && playerPos?.col === colIndex}
+                      isPlayer={isPlayerTile}
                       onClick={() => handleTileClick(rowIndex, colIndex)}
                       spriteX={sprite.x}
                       spriteY={sprite.y}
                     />
+                    {isPlayerTile && (
+                      <PlayerSprite
+                        isMoving={isPlayerMoving}
+                        direction={playerDirection}
+                        size={TILE_SIZE}
+                      />
+                    )}
                   </div>
                 );
               })}

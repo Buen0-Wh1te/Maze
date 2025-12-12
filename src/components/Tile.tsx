@@ -37,7 +37,6 @@ export function Tile({ type, revealed, isPlayer = false, onClick, spriteX = 0, s
       onClick={onClick}
       className={`absolute inset-0 flex items-center justify-center font-bold text-white cursor-pointer hover:brightness-110
         ${revealed ? (useSprite ? "" : config.fallbackColor) : "bg-gray-800"}
-        ${isPlayer ? "ring-4 ring-blue-400 ring-inset" : ""}
       `}
       style={
         useSprite
@@ -57,7 +56,7 @@ export function Tile({ type, revealed, isPlayer = false, onClick, spriteX = 0, s
             }
       }
     >
-      {!useSprite && revealed && (isPlayer ? "P" : config.label)}
+      {!useSprite && revealed && !isPlayer && config.label}
     </div>
   );
 }
