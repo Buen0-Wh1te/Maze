@@ -154,7 +154,6 @@ async function findMatchingTile(targetBitmask: number): Promise<[number, number]
 
   for (let y = 0; y < TILESET_CONFIG.NUM_ROWS; y++) {
     for (let x = 0; x < TILESET_CONFIG.TILES_PER_ROW; x++) {
-      // Skip tiles that don't contain any sprite data (issue #67)
       if (isTileEmpty(imageData, x, y)) {
         continue;
       }
