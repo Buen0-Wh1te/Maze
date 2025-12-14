@@ -21,6 +21,7 @@ import {
 import { handleTileInteraction } from "../utils/tileInteractions";
 import {
   TILE_SIZE,
+  TILE_TYPES,
   PATH_TILE_TYPES,
   GRADIENT_GOLD,
   BACKGROUND_STYLE,
