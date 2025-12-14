@@ -108,6 +108,7 @@ export function Game() {
     };
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!playerPos) return;
+      if (combat.isBattleActive) return;
 
       let targetRow = playerPos.row;
       let targetCol = playerPos.col;
