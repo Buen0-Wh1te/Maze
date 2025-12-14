@@ -30,8 +30,6 @@ function useObjectAnimation(frameCount: number, frameDelay: number) {
 export function ObjectSprite({ type, size }: ObjectSpriteProps) {
   const frameIndex = useObjectAnimation(ANIMATION_LOOP.length, FRAME_DELAY_MS);
   const currentSprite = KEY_SPRITES[ANIMATION_LOOP[frameIndex]];
-
-  // Make object sprite much smaller than tile
   const objectSize = size * 0.4;
 
   return (
