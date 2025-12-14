@@ -4,6 +4,8 @@ import { fetchLevel } from "../services/api";
 import type { Level } from "../types/api";
 import type { TileState, TileType } from "../types/game";
 import { TILE_TYPES, SCORE_FACTORS } from "../constants/config";
+import { useInventory } from "./useInventory";
+import { useCombat } from "./useCombat";
 
 export function useGameState(levelId: number | undefined, pseudo: string) {
   const navigate = useNavigate();
@@ -17,6 +19,9 @@ export function useGameState(levelId: number | undefined, pseudo: string) {
   } | null>(null);
   const [moves, setMoves] = useState(0);
   const [startTime, setStartTime] = useState<number | null>(null);
+
+  const inventory = useInventory();
+  const combat = useCombat();
 
   useEffect(() => {
     if (levelId) {
@@ -69,15 +74,20 @@ export function useGameState(levelId: number | undefined, pseudo: string) {
       ? Math.floor((Date.now() - startTime) / 1000)
       : 0;
 
+    const rawScore =
+      SCORE_FACTORS.BASE_SCORE -
+      tilesRevealed * SCORE_FACTORS.TILE_PENALTY -
+      moves * SCORE_FACTORS.MOVE_PENALTY -
+      timeElapsed * SCORE_FACTORS.TIME_BONUS_PER_SECOND;
+
+    const totalScore = Math.max(rawScore, SCORE_FACTORS.MIN_SCORE);
+
     return {
       pseudo,
       tilesRevealed,
       moves,
       timeElapsed,
-      totalScore:
-        tilesRevealed * SCORE_FACTORS.TILES_REVEALED_MULTIPLIER -
-        moves * SCORE_FACTORS.MOVES_PENALTY -
-        timeElapsed * SCORE_FACTORS.TIME_PENALTY,
+      totalScore,
     };
   };
 
@@ -86,6 +96,13 @@ export function useGameState(levelId: number | undefined, pseudo: string) {
     updated[row][col].revealed = true;
     setTiles(updated);
     return updated;
+  };
+
+  const clearTile = (row: number, col: number) => {
+    const updated = [...tiles];
+    updated[row][col].type = TILE_TYPES.PATH;
+    updated[row][col].content = "C";
+    setTiles(updated);
   };
 
   const movePlayer = (row: number, col: number) => {
@@ -129,9 +146,12 @@ export function useGameState(levelId: number | undefined, pseudo: string) {
     moves,
     startTime,
     revealTile,
+    clearTile,
     movePlayer,
     checkVictory,
     handleEndGame,
     retryLevel,
+    inventory,
+    combat,
   };
 }
