@@ -106,6 +106,17 @@ export function Tile({
       )}
       {!useSprite && !usePathBackground && effectiveRevealed && !isPlayer && config.label}
       {showObjectSprite && <ObjectSprite type="K" size={TILE_SIZE} />}
+      {type === "D" && effectiveRevealed && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div
+            className="bg-amber-800"
+            style={{
+              width: `${TILE_SIZE * 0.6}px`,
+              height: `${TILE_SIZE * 0.6}px`,
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }

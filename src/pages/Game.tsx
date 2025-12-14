@@ -21,6 +21,7 @@ import {
 import { handleTileInteraction } from "../utils/tileInteractions";
 import {
   TILE_SIZE,
+  TILE_TYPES,
   PATH_TILE_TYPES,
   GRADIENT_GOLD,
   BACKGROUND_STYLE,
@@ -90,6 +91,8 @@ export function Game() {
       clearTile(row, col);
     }
 
+    if (updated[row][col].type === TILE_TYPES.DOOR) return;
+
     const oldPos = { row: playerPos.row, col: playerPos.col };
     const newPos = { row, col };
 
@@ -105,6 +108,7 @@ export function Game() {
     };
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!playerPos) return;
+      if (combat.isBattleActive) return;
 
       let targetRow = playerPos.row;
       let targetCol = playerPos.col;
@@ -126,7 +130,12 @@ export function Game() {
           return;
       }
 
-      if (targetRow < 0 || targetRow >= tiles.length || targetCol < 0 || targetCol >= tiles[0].length) {
+      if (
+        targetRow < 0 ||
+        targetRow >= tiles.length ||
+        targetCol < 0 ||
+        targetCol >= tiles[0].length
+      ) {
         return;
       }
 
@@ -239,7 +248,8 @@ export function Game() {
                 const tileType =
                   PATH_TILE_TYPES.includes(tile.type as any) ? "path" : "wall";
                 const sprite = calculateTileSprite(tileType, neighbors);
-                const isPlayerTile = playerPos?.row === rowIndex && playerPos?.col === colIndex;
+                const isPlayerTile =
+                  playerPos?.row === rowIndex && playerPos?.col === colIndex;
 
                 return (
                   <div
