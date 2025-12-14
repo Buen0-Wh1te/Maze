@@ -195,12 +195,15 @@ export function calculateTileSprite(
     return { x, y, type };
   }
 
-  findMatchingTile(bitmask).then(([x, y]) => {
-    tilePositionCache[cacheKey] = [x, y];
-    if (onCacheUpdate) {
-      onCacheUpdate();
-    }
-  });
+  // Skip async search for hardcoded bitmasks
+  if (bitmask !== 255 && bitmask !== 0) {
+    findMatchingTile(bitmask).then(([x, y]) => {
+      tilePositionCache[cacheKey] = [x, y];
+      if (onCacheUpdate) {
+        onCacheUpdate();
+      }
+    });
+  }
 
   return getTileSpriteSync(bitmask, type);
 }
