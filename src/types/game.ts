@@ -1,4 +1,6 @@
-import type { Position, Level, Item } from "./api";
+import type { Position, Level, Item, Enemy } from "./api";
+
+export type { Enemy, Item };
 
 export type TileType =
   | "S" // Start
@@ -9,7 +11,8 @@ export type TileType =
   | "K" // Key
   | "D" // Door
   | "A" // Weapon/Armor
-  | "O"; // Obstacle
+  | "O" // Obstacle
+  | "I"; // Item
 
 export type GameStatus = "playing" | "victory" | "defeat";
 

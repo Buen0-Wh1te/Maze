@@ -206,6 +206,13 @@ export function calculateTileSprite(
 }
 
 function getTileSpriteSync(bitmask: number, type: TileType): { x: number; y: number; type: TileType } {
+  if (bitmask === 255) {
+    return { x: 9, y: 2, type };
+  }
+  if (bitmask === 0) {
+    return { x: 0, y: 3, type };
+  }
+
   const hasTop = (bitmask & (1 << 1)) !== 0;
   const hasRight = (bitmask & (1 << 3)) !== 0;
   const hasBottom = (bitmask & (1 << 5)) !== 0;
