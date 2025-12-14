@@ -21,12 +21,10 @@ export function handleTileInteraction(
   addItem: (item: Item) => void,
   startBattle: (enemy: Enemy) => void
 ): TileInteractionResult {
-  // Wall - cannot move
   if (tileType === TILE_TYPES.WALL) {
     return { canMove: false };
   }
 
-  // Key - collect it
   if (tileType === TILE_TYPES.KEY) {
     const color = tileContent.split(":")[1];
     if (color) {
@@ -35,7 +33,6 @@ export function handleTileInteraction(
     return { canMove: true, shouldClearTile: true, message: `Picked up ${color} key!` };
   }
 
-  // Door - check if player has key
   if (tileType === TILE_TYPES.DOOR) {
     const color = tileContent.split(":")[1];
     if (!color || !hasKey(color)) {
@@ -48,7 +45,6 @@ export function handleTileInteraction(
     return { canMove: true, shouldClearTile: true, message: `Opened ${color} door` };
   }
 
-  // Weapon/Armor - collect it
   if (tileType === TILE_TYPES.ARMOR) {
     const itemId = tileContent.split(":")[1];
     if (level && itemId) {
@@ -61,7 +57,6 @@ export function handleTileInteraction(
     return { canMove: true };
   }
 
-  // Item - collect it
   if (tileType === TILE_TYPES.ITEM) {
     const itemId = tileContent.split(":")[1];
     if (level && itemId) {
@@ -74,7 +69,6 @@ export function handleTileInteraction(
     return { canMove: true };
   }
 
-  // Monster - initiate combat
   if (tileType === TILE_TYPES.MONSTER) {
     const enemyType = tileContent.split(":")[1];
     if (level && enemyType) {
@@ -87,6 +81,5 @@ export function handleTileInteraction(
     return { canMove: false };
   }
 
-  // Default - allow movement
   return { canMove: true };
 }

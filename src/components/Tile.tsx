@@ -46,7 +46,6 @@ export function Tile({
   const backgroundPositionX = TILE_BORDER + spriteX * (TILE_SIZE + TILE_GAP);
   const backgroundPositionY = TILE_BORDER + spriteY * (TILE_SIZE + TILE_GAP);
 
-  // Determine background styling
   const getBackgroundStyle = () => {
     if (!effectiveRevealed) {
       return { className: "bg-gray-800", style: {} };

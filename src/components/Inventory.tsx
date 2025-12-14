@@ -11,14 +11,12 @@ const MAX_SLOTS = 9;
 export function Inventory({ inventory }: InventoryProps) {
   const { keys, weapon, items } = inventory;
 
-  // Combine all items into slots
   const slots: Array<{ type: "key" | "weapon" | "item"; data: any }> = [];
 
   keys.forEach(color => slots.push({ type: "key", data: color }));
   if (weapon) slots.push({ type: "weapon", data: weapon });
   items.forEach(item => slots.push({ type: "item", data: item }));
 
-  // Fill remaining slots with empty
   while (slots.length < MAX_SLOTS) {
     slots.push({ type: "item", data: null });
   }
