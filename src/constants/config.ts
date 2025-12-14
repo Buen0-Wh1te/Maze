@@ -19,9 +19,11 @@ export const GAME_LAYOUT = {
 } as const;
 
 export const SCORE_FACTORS = {
-  TILES_REVEALED_MULTIPLIER: 10,
-  MOVES_PENALTY: 2,
-  TIME_PENALTY: 1,
+  BASE_SCORE: 10000,
+  TIME_BONUS_PER_SECOND: 10,
+  TILE_PENALTY: 5,
+  MOVE_PENALTY: 3,
+  MIN_SCORE: 100,
 } as const;
 export const TILE_TYPES = {
   PATH: "C",
@@ -33,6 +35,7 @@ export const TILE_TYPES = {
   DOOR: "D",
   ARMOR: "A",
   OBSTACLE: "O",
+  ITEM: "I",
 } as const;
 
 export const PATH_TILE_TYPES = [
@@ -44,6 +47,7 @@ export const PATH_TILE_TYPES = [
   TILE_TYPES.DOOR,
   TILE_TYPES.ARMOR,
   TILE_TYPES.OBSTACLE,
+  TILE_TYPES.ITEM,
 ] as const;
 
 export const TILESET_CONFIG = {
@@ -56,6 +60,14 @@ export const BITMASK_WEIGHTS = {
   CARDINAL: 10,
   DIAGONAL: 1,
 } as const;
+
+export const PLAYER_SPRITE_CONFIG = {
+  SIZE_MULTIPLIER: 1.2,
+  MOVEMENT_DURATION_MS: 600,
+  FRAME_DELAY_RUNNING_MS: 100,
+  FRAME_DELAY_IDLE_MS: 150,
+} as const;
+
 export const GRADIENT_GOLD = "linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FFD700 100%)";
 export const MASK_GRADIENT = "linear-gradient(to bottom, transparent, black 5%, black 95%, transparent)";
 
