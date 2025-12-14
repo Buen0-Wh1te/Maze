@@ -73,6 +73,7 @@ export function Game() {
       level,
       inventory.hasKey,
       inventory.addKey,
+      inventory.removeKey,
       inventory.setWeapon,
       inventory.addItem,
       combat.startBattle

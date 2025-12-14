@@ -22,6 +22,13 @@ export function useInventory() {
     [inventory.keys]
   );
 
+  const removeKey = useCallback((color: string) => {
+    setInventory((prev) => ({
+      ...prev,
+      keys: prev.keys.filter((k) => k !== color),
+    }));
+  }, []);
+
   const setWeapon = useCallback((weapon: Item) => {
     setInventory((prev) => ({
       ...prev,
@@ -51,6 +58,7 @@ export function useInventory() {
     inventory,
     addKey,
     hasKey,
+    removeKey,
     setWeapon,
     hasWeapon,
     addItem,

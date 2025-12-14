@@ -16,6 +16,7 @@ export function handleTileInteraction(
   level: Level | null,
   hasKey: (color: string) => boolean,
   addKey: (color: string) => void,
+  removeKey: (color: string) => void,
   setWeapon: (weapon: Item) => void,
   addItem: (item: Item) => void,
   startBattle: (enemy: Enemy) => void
@@ -43,7 +44,8 @@ export function handleTileInteraction(
         message: color ? `Need ${color} key to open this door` : "Door is locked",
       };
     }
-    return { canMove: true, message: `Opened ${color} door` };
+    removeKey(color);
+    return { canMove: true, shouldClearTile: true, message: `Opened ${color} door` };
   }
 
   // Weapon/Armor - collect it
